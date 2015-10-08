@@ -23,9 +23,9 @@ public class ServerController
 		m_managerServer = new Server<ManagerInterface>();
 	}
 
-	public void addServer(String name)
+	public void addServer(String name, int udpport, int rmiPort)
 	{
-		BankServer server = new BankServer(name);
+		BankServer server = new BankServer(name, udpport, rmiPort);
 		m_serverList.add(server);
 	}
 
@@ -37,10 +37,10 @@ public class ServerController
 			{
 				m_customerServer.start(server.getCustomerService(),
 						server.getCustomerServerName(),
-						Properties.REGISTERY_PORT);
+						server.getRmiPort());
 				m_managerServer.start(server.getManagerService(),
 						server.getManagerServerName(),
-						Properties.REGISTERY_PORT);
+						server.getRmiPort());
 			} catch (RemoteException e)
 			{
 				e.printStackTrace();
@@ -51,7 +51,10 @@ public class ServerController
 	public static void main(String[] args)
 	{
 		ServerController controller = new ServerController();
-		controller.addServer("TD");
+		for(int i = 0; i < Properties.BANK_NAME_POOL.length; i ++)
+		{
+		    controller.addServer(Properties.BANK_NAME_POOL[i], Properties.PORT_POOL[i], Properties.REGISTERY_PORT_POOL[i]);
+		}
 		controller.startServers();
 	}
 

@@ -1,9 +1,15 @@
 package dlms.common.util;
 
 import java.io.BufferedWriter;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.SocketException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -81,5 +87,18 @@ public class Utility
 		}
 
 		return ret;
+	}
+	
+	public static <T> void sendUDPPacket(String host, int port, T content) throws IOException
+	{
+	    DatagramSocket Socket = new DatagramSocket();
+        InetAddress IPAddress = InetAddress.getByName(host);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+        os.writeObject(content);
+        byte[] data = outputStream.toByteArray();
+        DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, 9876);
+        Socket.send(sendPacket);
+        Socket.close();
 	}
 }

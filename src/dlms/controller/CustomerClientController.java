@@ -14,7 +14,7 @@ public class CustomerClientController
 	{
 
 		String host = "localhost";
-		Integer port = Properties.REGISTERY_PORT;
+		Integer port = Properties.REGISTERY_PORT_POOL[0];
 
 		Client<CustomerInterface> client = new Client<CustomerInterface>();
 		return client.getService(host, port, name);

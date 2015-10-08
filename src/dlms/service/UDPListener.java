@@ -1,8 +1,10 @@
 package dlms.service;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
@@ -16,16 +18,30 @@ public class UDPListener implements Runnable
 	private int m_listeningPort = -1;
 	private boolean m_stop = false;
 	private BankServer m_server = null;
+	private Thread m_thread;
 
 	public UDPListener(int port, BankServer server)
 	{
 		m_listeningPort = port;
 		m_server = server;
+		m_thread = new Thread(this);
+	}
+	
+	public void startListening()
+	{
+	    m_thread.start();
 	}
 
 	public void stopRunning()
 	{
 		m_stop = true;
+		try
+        {
+            m_thread.join();
+        } catch (InterruptedException e)
+        {
+            e.printStackTrace();
+        }
 	}
 
 	@Override
@@ -48,21 +64,14 @@ public class UDPListener implements Runnable
 			try
 			{
 				serverSocket.receive(receivePacket);
-				byte[] data = receivePacket.getData();
 
-				ByteArrayInputStream in = new ByteArrayInputStream(data);
-				ObjectInputStream is = new ObjectInputStream(in);
-
-				LoanProtocol protocol = (LoanProtocol) is.readObject();
+				LoanProtocol protocol = processIncomingPacket(receivePacket);
 
 				LoanProtocol answer = processProtocol(protocol);
 
-				String sentence = new String(receivePacket.getData());
-				System.out.println("RECEIVED: " + sentence);
 				InetAddress IPAddress = receivePacket.getAddress();
-				int port = receivePacket.getPort();
-				String capitalizedSentence = sentence.toUpperCase();
-				sendData = capitalizedSentence.getBytes();
+				int port = protocol.getPort();
+				sendData = generateReturnProtocol(answer);
 				DatagramPacket sendPacket = new DatagramPacket(sendData,
 						sendData.length, IPAddress, port);
 				serverSocket.send(sendPacket);
@@ -76,6 +85,29 @@ public class UDPListener implements Runnable
 		}
 		serverSocket.close();
 	}
+	
+	private LoanProtocol processIncomingPacket(DatagramPacket receivePacket) throws IOException, ClassNotFoundException
+	{
+	    byte[] data = receivePacket.getData();
+
+        ByteArrayInputStream in = new ByteArrayInputStream(data);
+        ObjectInputStream is = new ObjectInputStream(in);
+
+        LoanProtocol protocol = (LoanProtocol) is.readObject();
+        
+        return protocol;
+	}
+	
+	private byte[] generateReturnProtocol(LoanProtocol protocol) throws IOException
+	{
+	    ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+
+        ObjectOutputStream os = new ObjectOutputStream(outputStream);
+        os.writeObject(protocol);
+        byte[] data = outputStream.toByteArray();
+        return data;
+	}
+	
 
 	private LoanProtocol processProtocol(LoanProtocol protocol)
 	{
