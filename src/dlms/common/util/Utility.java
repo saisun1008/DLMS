@@ -17,6 +17,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import dlms.common.Properties;
+
 public class Utility
 {
 	private final static String WELCOME = "Welcome using the Distributed Loan Management System (DLMS)!\nPlease select desired operation:\n";
@@ -100,5 +102,23 @@ public class Utility
         DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, 9876);
         Socket.send(sendPacket);
         Socket.close();
+	}
+	
+	public static <T> int getIndexFromArray(T element, T[] array)
+	{
+	    return java.util.Arrays.asList(array).indexOf(element);
+	}
+	
+	public static int getRMIPortByBankName(String name)
+	{
+	    int ret = getIndexFromArray(name.toUpperCase(), Properties.BANK_NAME_POOL);
+	    if(ret != -1)
+	    {
+	        return Properties.REGISTERY_PORT_POOL[ret];
+	    }
+	    else
+	    {
+	        return -1;
+	    }
 	}
 }

@@ -373,4 +373,23 @@ public class CustomerList
 		}
 		return ret;
 	}
+	
+   public void updateUser(User user)
+    {
+        if (m_map.containsKey(user.getUsr().substring(0, 1).toUpperCase()))
+        {
+            for (User u : m_map
+                    .get(user.getUsr().substring(0, 1).toUpperCase()))
+            {
+                if (u.isSameUser(user))
+                {
+                    m_map
+                    .get(user.getUsr().substring(0, 1).toUpperCase()).remove(u);
+                    m_map
+                    .get(user.getUsr().substring(0, 1).toUpperCase()).add(user);
+                    break;
+                }
+            }
+        }
+    }
 }
