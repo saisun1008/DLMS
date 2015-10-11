@@ -193,4 +193,26 @@ public class User
 				+ SEPERATOR + pri_email + SEPERATOR + pri_creditLimit
 				+ SEPERATOR + isAdmin();
 	}
+
+	public boolean isCorrectPassword(String psw)
+	{
+		return pri_psw.equals(psw);
+	}
+
+	public double getCurrentLoanAmount()
+	{
+		double ret = 0;
+		for (Loan l : m_loanList)
+		{
+			ret += l.getAmount();
+		}
+
+		return ret;
+	}
+
+	public double getCreditLimit()
+	{
+		return pri_creditLimit;
+	}
+
 }

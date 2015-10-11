@@ -90,35 +90,42 @@ public class Utility
 
 		return ret;
 	}
-	
-	public static <T> void sendUDPPacket(String host, int port, T content) throws IOException
+
+	public static <T> void sendUDPPacket(String host, int port, T content)
+			throws IOException
 	{
-	    DatagramSocket Socket = new DatagramSocket();
-        InetAddress IPAddress = InetAddress.getByName(host);
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        ObjectOutputStream os = new ObjectOutputStream(outputStream);
-        os.writeObject(content);
-        byte[] data = outputStream.toByteArray();
-        DatagramPacket sendPacket = new DatagramPacket(data, data.length, IPAddress, 9876);
-        Socket.send(sendPacket);
-        Socket.close();
+		DatagramSocket Socket = new DatagramSocket();
+		InetAddress IPAddress = InetAddress.getByName(host);
+		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+		ObjectOutputStream os = new ObjectOutputStream(outputStream);
+		os.writeObject(content);
+		byte[] data = outputStream.toByteArray();
+		DatagramPacket sendPacket = new DatagramPacket(data, data.length,
+				IPAddress, 9876);
+		Socket.send(sendPacket);
+		Socket.close();
 	}
-	
+
 	public static <T> int getIndexFromArray(T element, T[] array)
 	{
-	    return java.util.Arrays.asList(array).indexOf(element);
+		return java.util.Arrays.asList(array).indexOf(element);
 	}
-	
+
 	public static int getRMIPortByBankName(String name)
 	{
-	    int ret = getIndexFromArray(name.toUpperCase(), Properties.BANK_NAME_POOL);
-	    if(ret != -1)
-	    {
-	        return Properties.REGISTERY_PORT_POOL[ret];
-	    }
-	    else
-	    {
-	        return -1;
-	    }
+		int ret = getIndexFromArray(name.toUpperCase(),
+				Properties.BANK_NAME_POOL);
+		if (ret != -1)
+		{
+			return Properties.REGISTERY_PORT_POOL[ret];
+		} else
+		{
+			return -1;
+		}
+	}
+
+	public static String generateRandomUniqueId()
+	{
+		return Long.toString(Calendar.getInstance().getTime().getTime());
 	}
 }

@@ -253,6 +253,8 @@ public class CustomerList
 			}
 		}
 		addUserToMap(user);
+		Logger.getInstance().log(getUserLogFileName(user),
+				"User account has been created");
 		writeAllCustomerInfoToFiles();
 		return true;
 	}
@@ -274,7 +276,7 @@ public class CustomerList
 	 * Write customer info list back to files: customerList.txt and customer
 	 * loan files
 	 */
-	private synchronized void writeAllCustomerInfoToFiles()
+	public synchronized void writeAllCustomerInfoToFiles()
 	{
 		try
 		{
@@ -373,23 +375,86 @@ public class CustomerList
 		}
 		return ret;
 	}
-	
-   public void updateUser(User user)
-    {
-        if (m_map.containsKey(user.getUsr().substring(0, 1).toUpperCase()))
-        {
-            for (User u : m_map
-                    .get(user.getUsr().substring(0, 1).toUpperCase()))
-            {
-                if (u.isSameUser(user))
-                {
-                    m_map
-                    .get(user.getUsr().substring(0, 1).toUpperCase()).remove(u);
-                    m_map
-                    .get(user.getUsr().substring(0, 1).toUpperCase()).add(user);
-                    break;
-                }
-            }
-        }
-    }
+
+	public User getUserByAccountId(String id, String psw)
+	{
+		User ret = null;
+		for (String key : m_map.keySet())
+		{
+			for (User u : m_map.get(key))
+			{
+				if (u.getAccount().equals(id) && u.isCorrectPassword(psw))
+				{
+					return u;
+				}
+			}
+		}
+		return ret;
+	}
+
+	public void updateUser(User user)
+	{
+		if (m_map.containsKey(user.getUsr().substring(0, 1).toUpperCase()))
+		{
+			for (User u : m_map
+					.get(user.getUsr().substring(0, 1).toUpperCase()))
+			{
+				if (u.isSameUser(user))
+				{
+					m_map.get(user.getUsr().substring(0, 1).toUpperCase())
+							.remove(u);
+					m_map.get(user.getUsr().substring(0, 1).toUpperCase()).add(
+							user);
+					break;
+				}
+			}
+		}
+	}
+
+	public void addLoanToUser(User user, double amount)
+	{
+		Loan loan = new Loan(Utility.generateRandomUniqueId(), amount,
+				Utility.dateToString(Calendar.getInstance().getTime()));
+		user.getLoanList().add(loan);
+		updateUser(user);
+		writeAllCustomerInfoToFiles();
+	}
+
+	public String getAllCustomerInfoToString()
+	{
+		String ret = "";
+		for (String key : m_map.keySet())
+		{
+			for (User u : m_map.get(key))
+			{
+				ret += u.toLogString() + "\n";
+			}
+		}
+		return ret;
+	}
+
+	public User getUserByLoanId(String id)
+	{
+		User ret = null;
+		for (String key : m_map.keySet())
+		{
+			for (User u : m_map.get(key))
+			{
+				if (u.getLoanList() != null)
+				{
+					for (Loan l : u.getLoanList())
+					{
+						if (l.getAccount().equals(id))
+							return u;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+
+	private String getUserLogFileName(User u)
+	{
+		return m_bankName.toLowerCase() + "/" + u.getUsr() + "_log.txt";
+	}
 }
