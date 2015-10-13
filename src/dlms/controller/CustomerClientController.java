@@ -27,8 +27,13 @@ public class CustomerClientController
 		{
 			CustomerInterface service = controller
 					.getCustomerBankServer("TD_customer");
-			service.openAccount("TD", "test", "test", "test@test.com", "4142",
-					"1234");
+			/*
+			 * service.openAccount("TD", "test", "test", "test@test.com",
+			 * "4142", "1234");
+			 */
+			boolean ret = service.getLoan("TD", "1444088547584", "1234", 5000);
+
+			System.out.println(ret);
 		} catch (RemoteException | NotBoundException e)
 		{
 			e.printStackTrace();

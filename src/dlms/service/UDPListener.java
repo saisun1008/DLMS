@@ -58,10 +58,11 @@ public class UDPListener implements Runnable
 		{
 			e1.printStackTrace();
 		}
-		byte[] receiveData = new byte[1024];
-		byte[] sendData = new byte[1024];
+
 		while (!m_stop)
 		{
+			byte[] receiveData = new byte[1024];
+			byte[] sendData = new byte[1024];
 			DatagramPacket receivePacket = new DatagramPacket(receiveData,
 					receiveData.length);
 			try
@@ -92,15 +93,22 @@ public class UDPListener implements Runnable
 	}
 
 	private LoanProtocol processIncomingPacket(DatagramPacket receivePacket)
-			throws IOException, ClassNotFoundException
+			throws ClassNotFoundException
 	{
 		byte[] data = receivePacket.getData();
-
+		LoanProtocol protocol = null;
 		ByteArrayInputStream in = new ByteArrayInputStream(data);
-		ObjectInputStream is = new ObjectInputStream(in);
+		try
+		{
+			ObjectInputStream is = new ObjectInputStream(in);
 
-		LoanProtocol protocol = (LoanProtocol) is.readObject();
-
+			protocol = (LoanProtocol) is.readObject();
+			in.close();
+			is.close();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 		return protocol;
 	}
 
@@ -122,7 +130,10 @@ public class UDPListener implements Runnable
 		case Request:
 			return generateAnswer(protocol);
 		case Answer:
-			m_usedAmount += protocol.getUser().getCurrentLoanAmount();
+			if (protocol.getUser() != null)
+			{
+				m_usedAmount += protocol.getUser().getCurrentLoanAmount();
+			}
 			m_lock.countDown();
 			return null;
 		default:

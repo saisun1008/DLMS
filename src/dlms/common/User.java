@@ -1,10 +1,15 @@
 package dlms.common;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Calendar;
 
-public class User
+public class User implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -1754768068731150480L;
 	private String pri_accountId;
 	private String pri_firstName;
 	private String pri_lastName;
@@ -20,7 +25,7 @@ public class User
 
 	private final String SEPERATOR = ",";
 
-	private ArrayList<Loan> m_loanList = null;
+	private transient ArrayList<Loan> m_loanList = null;
 
 	/**
 	 * Constructor when all user infos are provided

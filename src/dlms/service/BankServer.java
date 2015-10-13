@@ -117,6 +117,13 @@ public class BankServer
 		User user = m_customerList.getUserByAccountId(accountNumber, password);
 		Logger.getInstance().log(getUserLogFileName(user),
 				"User has requested to get a loan of " + loanAmount);
+
+		/*
+		 * if (user.getCurrentLoanAmount() >= user.getCreditLimit()) {
+		 * Logger.getInstance().log(getUserLogFileName(user),
+		 * "User doesn't have enought credit to apply " + loanAmount); return
+		 * false; }
+		 */
 		LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
 				Properties.HOST_NAME, m_udpPort, user, messageType.Request);
 		m_loanRequstLock = new CountDownLatch(2);
@@ -130,6 +137,8 @@ public class BankServer
 				{
 					Utility.sendUDPPacket(Properties.HOST_NAME,
 							Properties.PORT_POOL[i], p);
+					System.out.println("sending to port "
+							+ Properties.PORT_POOL[i] + p);
 
 				} catch (IOException e)
 				{

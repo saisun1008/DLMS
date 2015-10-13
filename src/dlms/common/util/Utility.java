@@ -101,7 +101,7 @@ public class Utility
 		os.writeObject(content);
 		byte[] data = outputStream.toByteArray();
 		DatagramPacket sendPacket = new DatagramPacket(data, data.length,
-				IPAddress, 9876);
+				IPAddress, port);
 		Socket.send(sendPacket);
 		Socket.close();
 	}

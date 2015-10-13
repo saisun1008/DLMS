@@ -18,7 +18,7 @@ public class LoanProtocol implements Serializable
 	/**
 	 * 
 	 */
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 3398224621142512608L;
 	private String m_id;
 	private String m_host;
 	private int m_port;
