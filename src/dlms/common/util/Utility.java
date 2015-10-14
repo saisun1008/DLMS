@@ -10,9 +10,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -23,6 +27,7 @@ public class Utility
 {
 	private final static String WELCOME = "Welcome using the Distributed Loan Management System (DLMS)!\nPlease select desired operation:\n";
 	private final static String SEPARATOR = "*************************************************\n*************************************************";
+	private static ArrayList<String> list = new ArrayList<String>();
 
 	public static void printWelcome()
 	{
@@ -127,5 +132,37 @@ public class Utility
 	public static String generateRandomUniqueId()
 	{
 		return Long.toString(Calendar.getInstance().getTime().getTime());
+	}
+
+	public static String[] getRMIServices()
+	{
+		list.clear();
+		System.setProperty("java.security.policy", "security.policy");
+
+		if (System.getSecurityManager() == null)
+		{
+			System.setSecurityManager(new SecurityManager());
+		}
+		for (int i = 0; i < Properties.BANK_NAME_POOL.length; i++)
+		{
+			try
+			{
+				Registry registry = LocateRegistry
+						.getRegistry(Properties.HOST_NAME,
+								Properties.REGISTERY_PORT_POOL[i]);
+				for (String str : registry.list())
+				{
+					list.add("[localhost:" + Properties.REGISTERY_PORT_POOL[i]
+							+ "] : " + str);
+				}
+
+			} catch (RemoteException e)
+			{
+				e.printStackTrace();
+			}
+
+		}
+
+		return list.toArray(new String[list.size()]);
 	}
 }

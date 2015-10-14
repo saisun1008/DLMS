@@ -59,7 +59,8 @@ public class Logger
 				ret = true;
 			}
 
-			writer = new BufferedWriter(new FileWriter("logs/" + fileName));
+			writer = new BufferedWriter(
+					new FileWriter("logs/" + fileName, true));
 			if (!msg.equals(""))
 			{
 				writer.write(Calendar.getInstance().getTime().toString() + "\t"

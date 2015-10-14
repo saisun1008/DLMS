@@ -36,11 +36,10 @@ public class ServerController
 			try
 			{
 				m_customerServer.start(server.getCustomerService(),
-						server.getCustomerServerName(),
-						server.getRmiPort());
+						server.getCustomerServerName(), server.getRmiPort());
 				m_managerServer.start(server.getManagerService(),
-						server.getManagerServerName(),
-						server.getRmiPort());
+						server.getManagerServerName(), server.getRmiPort());
+				System.out.println(server.getBankName() + " is now online");
 			} catch (RemoteException e)
 			{
 				e.printStackTrace();
@@ -51,9 +50,10 @@ public class ServerController
 	public static void main(String[] args)
 	{
 		ServerController controller = new ServerController();
-		for(int i = 0; i < Properties.BANK_NAME_POOL.length; i ++)
+		for (int i = 0; i < Properties.BANK_NAME_POOL.length; i++)
 		{
-		    controller.addServer(Properties.BANK_NAME_POOL[i], Properties.PORT_POOL[i], Properties.REGISTERY_PORT_POOL[i]);
+			controller.addServer(Properties.BANK_NAME_POOL[i],
+					Properties.PORT_POOL[i], Properties.REGISTERY_PORT_POOL[i]);
 		}
 		controller.startServers();
 	}

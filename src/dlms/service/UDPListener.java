@@ -12,6 +12,7 @@ import java.net.SocketException;
 import java.util.concurrent.CountDownLatch;
 
 import dlms.common.Properties.messageType;
+import dlms.common.User;
 import dlms.common.protocol.LoanProtocol;
 
 public class UDPListener implements Runnable
@@ -132,7 +133,7 @@ public class UDPListener implements Runnable
 		case Answer:
 			if (protocol.getUser() != null)
 			{
-				m_usedAmount += protocol.getUser().getCurrentLoanAmount();
+				m_usedAmount += protocol.getUser().getLoanAmount();
 			}
 			m_lock.countDown();
 			return null;
@@ -143,9 +144,13 @@ public class UDPListener implements Runnable
 
 	private LoanProtocol generateAnswer(LoanProtocol request)
 	{
+		User user = m_server.lookUpUser(request.getUser());
+		if (user != null)
+		{
+			user.calculateCurrentLoanAmount();
+		}
 		LoanProtocol answer = new LoanProtocol(request.getId(),
-				request.getHost(), request.getPort(),
-				m_server.lookUpUser(request.getUser()), messageType.Answer);
+				request.getHost(), request.getPort(), user, messageType.Answer);
 		return answer;
 	}
 

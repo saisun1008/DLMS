@@ -9,26 +9,27 @@ import dlms.common.Properties;
 import dlms.common.util.ServerDisplayMsgs;
 import dlms.common.util.Utility;
 import dlms.interfaces.CustomerInterface;
+import dlms.interfaces.ManagerInterface;
 import dlms.service.Client;
 
-public class CustomerClientController
+public class ManagerClientController
 {
-	private Client<CustomerInterface> client = null;
+	private Client<ManagerInterface> client = null;
 
-	public CustomerClientController(int port)
+	public ManagerClientController(int port)
 	{
 		String host = "localhost";
 
 		try
 		{
-			client = new Client<CustomerInterface>(host, port);
+			client = new Client<ManagerInterface>(host, port);
 		} catch (RemoteException e)
 		{
 			e.printStackTrace();
 		}
 	}
 
-	public CustomerInterface getCustomerBankServer(String name)
+	public ManagerInterface getManagerBankServer(String name)
 			throws RemoteException, NotBoundException
 	{
 		String host = "localhost";
@@ -47,11 +48,11 @@ public class CustomerClientController
 		while (!terminate)
 		{
 			ServerDisplayMsgs.printWelcome();
-			System.out.println("List of available customer services");
+			System.out.println("List of available manager services");
 			String[] services = Utility.getRMIServices();
 			for (int i = 0; i < services.length; i++)
 			{
-				if (!services[i].contains("manager"))
+				if (!services[i].contains("customer"))
 				{
 					System.out.println(services[i]);
 				}
@@ -69,7 +70,7 @@ public class CustomerClientController
 			String name = "";
 			for (int i = 0; i < services.length; i++)
 			{
-				if (!services[i].contains("manager")
+				if (!services[i].contains("customer")
 						&& services[i].contains(Integer.toString(choice)))
 				{
 					name = services[i].split(": ")[1];
@@ -77,39 +78,32 @@ public class CustomerClientController
 			}
 			try
 			{
-				CustomerClientController controller = new CustomerClientController(
+				ManagerClientController controller = new ManagerClientController(
 						choice);
-				CustomerInterface service = controller
-						.getCustomerBankServer(name);
-				switch (ServerDisplayMsgs.printCustomerOps())
+				ManagerInterface service = controller
+						.getManagerBankServer(name);
+				switch (ServerDisplayMsgs.printManagerOps())
 				{
 				case 1:
-					String[] info = ServerDisplayMsgs.getCustomerInfo().split(
-							";;d");
-					String ret = service.openAccount(name.split("_")[0],
-							info[0], info[1], info[2], info[3], info[4]);
-					if (ret != null)
+					String[] info = ServerDisplayMsgs.delayLoan().split(";;d");
+					boolean ret = service.delayPayment(name.split("_")[0],
+							info[0], info[1], info[2]);
+					if (ret)
 					{
 						System.out
-								.println("Account has been created, account id is "
+								.println("Loan has been successfully delayed "
 										+ ret);
 					} else
 					{
-						System.out.println("Failed to open account ");
+						System.out.println("Failed to delay the loan ");
 					}
 					break;
 				case 2:
-					String[] info1 = ServerDisplayMsgs.applyLoan().split(";;d");
-					String result = service.getLoan(name.split("_")[0],
-							info1[0], info1[1], Double.parseDouble(info1[2]));
-
-					if (result != null)
+					String result = service
+							.printCustomerInfo(name.split("_")[0]);
+					for (String str : result.split("\n"))
 					{
-						System.out.println("Loan has been created, loan id is "
-								+ result);
-					} else
-					{
-						System.out.println("Failed to get a loan ");
+						System.out.println(str);
 					}
 					break;
 				case 3:

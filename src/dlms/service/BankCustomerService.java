@@ -15,7 +15,7 @@ public class BankCustomerService implements CustomerInterface
 	}
 
 	@Override
-	public boolean openAccount(String bank, String firstName, String lastName,
+	public String openAccount(String bank, String firstName, String lastName,
 			String emailAddress, String phoneNumber, String password)
 			throws RemoteException
 	{
@@ -24,7 +24,7 @@ public class BankCustomerService implements CustomerInterface
 	}
 
 	@Override
-	public boolean getLoan(String bank, String accountNumber, String password,
+	public String getLoan(String bank, String accountNumber, String password,
 			double loanAmount) throws RemoteException
 	{
 		return m_server.getLoan(bank, accountNumber, password, loanAmount);

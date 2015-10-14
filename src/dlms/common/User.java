@@ -26,6 +26,7 @@ public class User implements Serializable
 	private final String SEPERATOR = ",";
 
 	private transient ArrayList<Loan> m_loanList = null;
+	private double m_currentLoanAmount = 0;
 
 	/**
 	 * Constructor when all user infos are provided
@@ -204,15 +205,20 @@ public class User implements Serializable
 		return pri_psw.equals(psw);
 	}
 
-	public double getCurrentLoanAmount()
+	public double calculateCurrentLoanAmount()
 	{
-		double ret = 0;
+		m_currentLoanAmount = 0;
 		for (Loan l : m_loanList)
 		{
-			ret += l.getAmount();
+			m_currentLoanAmount += l.getAmount();
 		}
 
-		return ret;
+		return m_currentLoanAmount;
+	}
+
+	public double getLoanAmount()
+	{
+		return m_currentLoanAmount;
 	}
 
 	public double getCreditLimit()

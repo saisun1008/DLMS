@@ -1,5 +1,6 @@
 package dlms.service;
 
+import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -10,6 +11,20 @@ import dlms.common.util.Logger;
 
 public class Client<T extends Remote>
 {
+
+	private Registry registry = null;
+
+	public Client(String ip, int port) throws RemoteException
+	{
+		System.setProperty("java.security.policy", "security.policy");
+
+		if (System.getSecurityManager() == null)
+		{
+			System.setSecurityManager(new SecurityManager());
+		}
+
+		registry = LocateRegistry.getRegistry(ip, port);
+	}
 
 	/**
 	 *
@@ -26,20 +41,17 @@ public class Client<T extends Remote>
 	public T getService(String ip, int port, String serviceName)
 			throws RemoteException, NotBoundException
 	{
-
-		System.setProperty("java.security.policy", "security.policy");
-
-		if (System.getSecurityManager() == null)
-		{
-			System.setSecurityManager(new SecurityManager());
-		}
-
-		Registry registry = LocateRegistry.getRegistry(ip, port);
 		T server = (T) registry.lookup(serviceName);
 
 		Logger.getInstance().log(serviceName + "_server_log.txt",
 				"Client has successfully looked up this service");
 		return server;
+	}
+
+	public String[] getRegistryServices() throws AccessException,
+			RemoteException
+	{
+		return registry.list();
 	}
 
 }

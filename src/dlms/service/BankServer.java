@@ -102,16 +102,15 @@ public class BankServer
 		return m_customerList.getAllCustomerInfoToString();
 	}
 
-	public synchronized boolean openAccount(String bank, String firstName,
+	public synchronized String openAccount(String bank, String firstName,
 			String lastName, String emailAddress, String phoneNumber,
 			String password)
 	{
-		m_customerList.addCustomer(bank, firstName, lastName, emailAddress,
-				phoneNumber, password);
-		return false;
+		return m_customerList.addCustomer(bank, firstName, lastName,
+				emailAddress, phoneNumber, password);
 	}
 
-	public synchronized boolean getLoan(String bank, String accountNumber,
+	public synchronized String getLoan(String bank, String accountNumber,
 			String password, double loanAmount)
 	{
 		User user = m_customerList.getUserByAccountId(accountNumber, password);
@@ -124,6 +123,7 @@ public class BankServer
 		 * "User doesn't have enought credit to apply " + loanAmount); return
 		 * false; }
 		 */
+		user.calculateCurrentLoanAmount();
 		LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
 				Properties.HOST_NAME, m_udpPort, user, messageType.Request);
 		m_loanRequstLock = new CountDownLatch(2);
@@ -137,8 +137,6 @@ public class BankServer
 				{
 					Utility.sendUDPPacket(Properties.HOST_NAME,
 							Properties.PORT_POOL[i], p);
-					System.out.println("sending to port "
-							+ Properties.PORT_POOL[i] + p);
 
 				} catch (IOException e)
 				{
@@ -154,20 +152,20 @@ public class BankServer
 			e.printStackTrace();
 		}
 
-		if (user.getCurrentLoanAmount() + m_udpHandler.getLastRequestResult()
+		if (user.getLoanAmount() + m_udpHandler.getLastRequestResult()
 				+ loanAmount < user.getCreditLimit())
 		{
-			m_customerList.addLoanToUser(user, loanAmount);
+			String ret = m_customerList.addLoanToUser(user, loanAmount);
 			Logger.getInstance().log(
 					getUserLogFileName(user),
 					"User has successfully requested to get a loan of "
 							+ loanAmount);
-			return true;
+			return ret;
 		}
 
 		Logger.getInstance().log(getUserLogFileName(user),
 				"User has failed to get a loan of " + loanAmount);
-		return false;
+		return null;
 	}
 
 	public String getCustomerServerName()
@@ -208,6 +206,11 @@ public class BankServer
 	private String getUserLogFileName(User u)
 	{
 		return m_name.toLowerCase() + "/" + u.getUsr() + "_log.txt";
+	}
+
+	public String getBankName()
+	{
+		return m_name;
 	}
 
 }

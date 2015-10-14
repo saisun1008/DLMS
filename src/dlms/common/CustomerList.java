@@ -225,7 +225,7 @@ public class CustomerList
 		}
 	}
 
-	public boolean addCustomer(String bank, String firstName, String lastName,
+	public String addCustomer(String bank, String firstName, String lastName,
 			String emailAddress, String phoneNumber, String password)
 	{
 		User user = new User(firstName, lastName, phoneNumber, emailAddress,
@@ -233,7 +233,7 @@ public class CustomerList
 
 		if (isUserExist(user))
 		{
-			return false;
+			return null;
 		}
 		// create user log file
 		checkUserLogFile(user);
@@ -256,7 +256,7 @@ public class CustomerList
 		Logger.getInstance().log(getUserLogFileName(user),
 				"User account has been created");
 		writeAllCustomerInfoToFiles();
-		return true;
+		return user.getAccount();
 	}
 
 	private void checkUserLogFile(User usr)
@@ -411,13 +411,14 @@ public class CustomerList
 		}
 	}
 
-	public void addLoanToUser(User user, double amount)
+	public String addLoanToUser(User user, double amount)
 	{
 		Loan loan = new Loan(Utility.generateRandomUniqueId(), amount,
 				Utility.dateToString(Calendar.getInstance().getTime()));
 		user.getLoanList().add(loan);
 		updateUser(user);
 		writeAllCustomerInfoToFiles();
+		return loan.getId();
 	}
 
 	public String getAllCustomerInfoToString()
