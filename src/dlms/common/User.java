@@ -162,6 +162,11 @@ public class User implements Serializable
 				+ SEPERATOR + pri_email;
 	}
 
+	/**
+	 * Check if given user is the same as current user
+	 * @param user
+	 * @return
+	 */
 	public boolean isSameUser(User user)
 	{
 		return getCompareString().equals(user.getCompareString());
@@ -205,6 +210,10 @@ public class User implements Serializable
 		return pri_psw.equals(psw);
 	}
 
+	/**
+	 * Calculate current user loan amount
+	 * @return
+	 */
 	public double calculateCurrentLoanAmount()
 	{
 		m_currentLoanAmount = 0;

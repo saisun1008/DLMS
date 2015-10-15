@@ -14,15 +14,16 @@ import dlms.common.User;
  */
 public class LoanProtocol implements Serializable
 {
-
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 3398224621142512608L;
+	//protocol id
 	private String m_id;
+	//host of the sender
 	private String m_host;
+	//udp recieving port of the sender
 	private int m_port;
+	//user object in the packet
 	private User m_usr;
+	//protocol type: request or answer
 	private messageType m_type;
 
 	public LoanProtocol(String id, String host, int port, User usr,

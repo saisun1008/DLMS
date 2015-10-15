@@ -4,6 +4,11 @@ import java.rmi.RemoteException;
 
 import dlms.interfaces.CustomerInterface;
 
+/**
+ * RMI Customer service implementation
+ * @author Sai
+ *
+ */
 public class BankCustomerService implements CustomerInterface
 {
 

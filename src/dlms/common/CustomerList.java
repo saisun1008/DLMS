@@ -18,8 +18,17 @@ import dlms.common.util.Utility;
 
 /**
  * List object which keeps all customer info in a hashmap File structure:
- * customerList.txt within the bank directory will have loan files for each
+ * customerList.txt within the bank directory has all customer info for the
+ * bank, and in bank directory, there are customer loan files for each
  * registered customer
+ * 
+ * 
+ * HashMap structure 
+ * ===================================== 
+ * |"A": array list of User objects 
+ * |"B": {User1, User 2} 
+ * |.. 
+ * |====================================
  * 
  * @author Sai
  *
@@ -33,6 +42,11 @@ public class CustomerList
 	private final String MANAGER_ACCT = "1,Manager,Manager,514514514,Manager,manager@bank.com,200000,true";
 	private final double DEFAULT_CREDIT_LIMIT = 200000;
 
+	/**
+	 * Constructor for the customer list
+	 * 
+	 * @param bank
+	 */
 	public CustomerList(String bank)
 	{
 		m_bankName = bank;
@@ -55,38 +69,39 @@ public class CustomerList
 	 */
 	private void createBankDir()
 	{
+		// create bank data directory
 		File theDir = new File("data/" + m_bankName.toLowerCase());
+		// create bank log directory
 		File theDir2 = new File("logs/" + m_bankName.toLowerCase());
 		// if the directory does not exist, create it
-		while (!theDir.exists() || !theDir2.exists())
+		if (!theDir.exists())
 		{
-			if (!theDir.exists())
+			try
 			{
-				try
-				{
-					theDir.mkdir();
-				} catch (SecurityException se)
-				{
-					se.printStackTrace();
-				}
-				createCustomerInfoFile();
+				theDir.mkdir();
+			} catch (SecurityException se)
+			{
+				se.printStackTrace();
 			}
+			createCustomerInfoFile();
+		}
 
-			if (!theDir2.exists())
+		if (!theDir2.exists())
+		{
+			try
 			{
-				try
-				{
-					theDir2.mkdir();
-				} catch (SecurityException se)
-				{
-					se.printStackTrace();
-				}
+				theDir2.mkdir();
+			} catch (SecurityException se)
+			{
+				se.printStackTrace();
 			}
 		}
 	}
 
 	/**
 	 * Create customer info file, and put manager account info in
+	 * Manager info will be placed into the customerlist.txt file for 
+	 * the bank if the bank is created for the first time
 	 */
 	private void createCustomerInfoFile()
 	{
@@ -225,6 +240,18 @@ public class CustomerList
 		}
 	}
 
+	/**
+	 * Add one customer into hashtable, will locate
+	 * the proper key, and then add the user into the 
+	 * correspondent array list
+	 * @param bank
+	 * @param firstName
+	 * @param lastName
+	 * @param emailAddress
+	 * @param phoneNumber
+	 * @param password
+	 * @return
+	 */
 	public String addCustomer(String bank, String firstName, String lastName,
 			String emailAddress, String phoneNumber, String password)
 	{
@@ -259,6 +286,10 @@ public class CustomerList
 		return user.getAccount();
 	}
 
+	/**
+	 * Create user log file, and write one log message into it
+	 * @param usr
+	 */
 	private void checkUserLogFile(User usr)
 	{
 		boolean ret = Logger.getInstance().log(
@@ -322,6 +353,10 @@ public class CustomerList
 		}
 	}
 
+	/**
+	 * Add user object to hashmap
+	 * @param user
+	 */
 	private void addUserToMap(User user)
 	{
 		if (m_map.containsKey(user.getUsr().substring(0, 1).toUpperCase()))
@@ -336,6 +371,11 @@ public class CustomerList
 		}
 	}
 
+	/**
+	 * Check if user exists in the hashmap
+	 * @param user
+	 * @return
+	 */
 	public boolean isUserExist(User user)
 	{
 		boolean ret = false;
@@ -358,6 +398,12 @@ public class CustomerList
 		return ret;
 	}
 
+	/**
+	 * Return user object in the hashmap
+	 * @param user use user first/last names, phone number, email
+	 * to find the user in the hashmap
+	 * @return
+	 */
 	public User getUser(User user)
 	{
 		User ret = null;
@@ -376,6 +422,12 @@ public class CustomerList
 		return ret;
 	}
 
+	/**
+	 * Get user object from the hashmap by account id
+	 * @param id
+	 * @param psw
+	 * @return
+	 */
 	public User getUserByAccountId(String id, String psw)
 	{
 		User ret = null;
@@ -392,6 +444,10 @@ public class CustomerList
 		return ret;
 	}
 
+	/**
+	 * Update existing user object with provided new user object
+	 * @param user
+	 */
 	public void updateUser(User user)
 	{
 		if (m_map.containsKey(user.getUsr().substring(0, 1).toUpperCase()))
@@ -411,6 +467,12 @@ public class CustomerList
 		}
 	}
 
+	/**
+	 * Add a loan object to user
+	 * @param user
+	 * @param amount amount of the loan
+	 * @return
+	 */
 	public String addLoanToUser(User user, double amount)
 	{
 		Loan loan = new Loan(Utility.generateRandomUniqueId(), amount,
@@ -421,6 +483,10 @@ public class CustomerList
 		return loan.getId();
 	}
 
+	/**
+	 * Print all customer info to string
+	 * @return
+	 */
 	public String getAllCustomerInfoToString()
 	{
 		String ret = "";
@@ -434,6 +500,11 @@ public class CustomerList
 		return ret;
 	}
 
+	/**
+	 * Get user object by a given loan id
+	 * @param id
+	 * @return
+	 */
 	public User getUserByLoanId(String id)
 	{
 		User ret = null;
@@ -454,6 +525,11 @@ public class CustomerList
 		return ret;
 	}
 
+	/**
+	 * Get user log file name
+	 * @param u
+	 * @return
+	 */
 	private String getUserLogFileName(User u)
 	{
 		return m_bankName.toLowerCase() + "/" + u.getUsr() + "_log.txt";

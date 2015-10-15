@@ -11,10 +11,19 @@ import dlms.common.util.Utility;
 import dlms.interfaces.CustomerInterface;
 import dlms.service.Client;
 
+/**
+ * Class for customers to access bank customer services
+ * @author Sai
+ *
+ */
 public class CustomerClientController
 {
 	private Client<CustomerInterface> client = null;
 
+	/**
+	 * Constructor
+	 * @param port
+	 */
 	public CustomerClientController(int port)
 	{
 		String host = "localhost";
@@ -28,17 +37,18 @@ public class CustomerClientController
 		}
 	}
 
+	/**
+	 * Get RMI object from registry
+	 * @param name
+	 * @return
+	 * @throws RemoteException
+	 * @throws NotBoundException
+	 */
 	public CustomerInterface getCustomerBankServer(String name)
 			throws RemoteException, NotBoundException
 	{
 		String host = "localhost";
-		Integer port = Properties.REGISTERY_PORT_POOL[0];
-		return client.getService(host, port, name);
-	}
-
-	public String[] getServices() throws AccessException, RemoteException
-	{
-		return client.getRegistryServices();
+		return client.getService(host, name);
 	}
 
 	public static void main(String[] args)
@@ -51,6 +61,8 @@ public class CustomerClientController
 			String[] services = Utility.getRMIServices();
 			for (int i = 0; i < services.length; i++)
 			{
+				//don't display the service if the name contains manager key word
+				//to make sure customer can not see the manager object
 				if (!services[i].contains("manager"))
 				{
 					System.out.println(services[i]);

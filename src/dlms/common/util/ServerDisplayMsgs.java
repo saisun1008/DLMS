@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
+ * Utility class to print out messages in the console
  * Created by Sai on 2015/5/25.
  */
 public class ServerDisplayMsgs

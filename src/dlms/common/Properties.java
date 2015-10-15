@@ -1,5 +1,10 @@
 package dlms.common;
 
+/**
+ * Property class contains useful global data
+ * @author Sai
+ *
+ */
 public class Properties
 {
 	public final static String HOST_NAME = "localhost";

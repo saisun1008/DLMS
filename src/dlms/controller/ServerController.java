@@ -9,6 +9,11 @@ import dlms.interfaces.ManagerInterface;
 import dlms.service.BankServer;
 import dlms.service.Server;
 
+/**
+ * Class to start bank servers
+ * @author Sai
+ *
+ */
 public class ServerController
 {
 
@@ -23,12 +28,21 @@ public class ServerController
 		m_managerServer = new Server<ManagerInterface>();
 	}
 
+	/**
+	 * Create server object and add it into server list
+	 * @param name
+	 * @param udpport
+	 * @param rmiPort
+	 */
 	public void addServer(String name, int udpport, int rmiPort)
 	{
 		BankServer server = new BankServer(name, udpport, rmiPort);
 		m_serverList.add(server);
 	}
 
+	/**
+	 * Start servers from the server list
+	 */
 	public void startServers()
 	{
 		for (BankServer server : m_serverList)

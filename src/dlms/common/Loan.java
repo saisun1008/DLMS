@@ -6,7 +6,7 @@ import java.util.Calendar;
 public class Loan implements Serializable
 {
 	/**
-	 * 
+	 * Loan class represents loans
 	 */
 	private static final long serialVersionUID = 1L;
 	private String m_id;
@@ -15,6 +15,13 @@ public class Loan implements Serializable
 	private String m_dueDate;
 	private final String SEPARATOR = ",";
 
+	/**
+	 * Constructor
+	 * @param id
+	 * @param account
+	 * @param amount
+	 * @param date
+	 */
 	public Loan(String id, String account, double amount, String date)
 	{
 		m_id = id;
@@ -23,6 +30,13 @@ public class Loan implements Serializable
 		m_dueDate = date;
 	}
 
+	/**
+	 * Constructor, automatically generate loan id
+	 * @param id
+	 * @param account
+	 * @param amount
+	 * @param date
+	 */
 	public Loan(String account, double amount, String date)
 	{
 		m_id = generateLoanId();
@@ -37,6 +51,10 @@ public class Loan implements Serializable
 				+ SEPARATOR + m_dueDate;
 	}
 
+	/**
+	 * Set due date for the loan
+	 * @param date
+	 */
 	public void setDueDate(String date)
 	{
 		m_dueDate = date;

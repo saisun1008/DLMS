@@ -38,7 +38,7 @@ public class Client<T extends Remote>
 	 * @throws RemoteException
 	 * @throws NotBoundException
 	 */
-	public T getService(String ip, int port, String serviceName)
+	public T getService(String ip, String serviceName)
 			throws RemoteException, NotBoundException
 	{
 		T server = (T) registry.lookup(serviceName);
@@ -47,11 +47,4 @@ public class Client<T extends Remote>
 				"Client has successfully looked up this service");
 		return server;
 	}
-
-	public String[] getRegistryServices() throws AccessException,
-			RemoteException
-	{
-		return registry.list();
-	}
-
 }

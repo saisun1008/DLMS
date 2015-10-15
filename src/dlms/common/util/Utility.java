@@ -58,6 +58,12 @@ public class Utility
 		return ret;
 	}
 
+	/**
+	 * Write a message to the given file
+	 * @param fileName
+	 * @param msg
+	 * @return
+	 */
 	public static boolean writeToFile(String fileName, String msg)
 	{
 		BufferedWriter writer = null;
@@ -96,6 +102,13 @@ public class Utility
 		return ret;
 	}
 
+	/**
+	 * Send UDP packet to a host and port
+	 * @param host
+	 * @param port
+	 * @param content
+	 * @throws IOException
+	 */
 	public static <T> void sendUDPPacket(String host, int port, T content)
 			throws IOException
 	{
@@ -134,6 +147,10 @@ public class Utility
 		return Long.toString(Calendar.getInstance().getTime().getTime());
 	}
 
+	/**
+	 * Get all RMI services from specified ports, and return them in a string array
+	 * @return
+	 */
 	public static String[] getRMIServices()
 	{
 		list.clear();

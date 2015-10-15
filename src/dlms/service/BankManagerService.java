@@ -4,6 +4,11 @@ import java.rmi.RemoteException;
 
 import dlms.interfaces.ManagerInterface;
 
+/**
+ * RMI manager service implementation
+ * @author Sai
+ *
+ */
 public class BankManagerService implements ManagerInterface
 {
 	private BankServer m_server;

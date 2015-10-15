@@ -15,6 +15,12 @@ import dlms.common.Properties.messageType;
 import dlms.common.User;
 import dlms.common.protocol.LoanProtocol;
 
+/**
+ * UDP listener class, which is a thread running separately from the main thread,
+ * it keeps listening on a given port
+ * @author Sai
+ *
+ */
 public class UDPListener implements Runnable
 {
 	private int m_listeningPort = -1;
@@ -24,6 +30,11 @@ public class UDPListener implements Runnable
 	private CountDownLatch m_lock = null;
 	private double m_usedAmount = 0;
 
+	/**
+	 * Constructor
+	 * @param port port to listen on
+	 * @param server bank server object which owns this listener
+	 */
 	public UDPListener(int port, BankServer server)
 	{
 		m_listeningPort = port;
@@ -31,6 +42,9 @@ public class UDPListener implements Runnable
 		m_thread = new Thread(this);
 	}
 
+	/**
+	 * Start listener thread
+	 */
 	public void startListening()
 	{
 		m_thread.start();
@@ -93,6 +107,12 @@ public class UDPListener implements Runnable
 		serverSocket.close();
 	}
 
+	/**
+	 * Process incoming UDP packet, and convert it to a loanProtocol object
+	 * @param receivePacket
+	 * @return
+	 * @throws ClassNotFoundException
+	 */
 	private LoanProtocol processIncomingPacket(DatagramPacket receivePacket)
 			throws ClassNotFoundException
 	{
@@ -113,6 +133,12 @@ public class UDPListener implements Runnable
 		return protocol;
 	}
 
+	/**
+	 * Convert a loanProtocol object to byte array for UDP transmission
+	 * @param protocol
+	 * @return
+	 * @throws IOException
+	 */
 	private byte[] generateReturnProtocol(LoanProtocol protocol)
 			throws IOException
 	{
@@ -124,12 +150,20 @@ public class UDPListener implements Runnable
 		return data;
 	}
 
+	/**
+	 * Analyze the loan protocol object and behave accordingly
+	 * @param protocol
+	 * @return
+	 */
 	private LoanProtocol processProtocol(LoanProtocol protocol)
 	{
 		switch (protocol.getType())
 		{
+		//if it's a requesting protocol, then generate answer for it
 		case Request:
 			return generateAnswer(protocol);
+	    //if it's an answer from another server, then calculate 
+		//how many loan the user has on the other server
 		case Answer:
 			if (protocol.getUser() != null)
 			{
@@ -142,6 +176,11 @@ public class UDPListener implements Runnable
 		}
 	}
 
+	/**
+	 * Generate answer to the request
+	 * @param request
+	 * @return
+	 */
 	private LoanProtocol generateAnswer(LoanProtocol request)
 	{
 		User user = m_server.lookUpUser(request.getUser());

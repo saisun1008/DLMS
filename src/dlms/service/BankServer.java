@@ -13,6 +13,13 @@ import dlms.common.protocol.LoanProtocol;
 import dlms.common.util.Logger;
 import dlms.common.util.Utility;
 
+/**
+ * Bank server class contains customer and manager services, and it owns a UDP
+ * listener thread
+ * 
+ * @author Sai
+ *
+ */
 public class BankServer
 {
 
@@ -56,16 +63,28 @@ public class BankServer
 		return m_rmiPort;
 	}
 
+	/**
+	 * Delay a loan payment
+	 * 
+	 * @param bank
+	 * @param loanID
+	 * @param currentDueDate
+	 * @param newDueDate
+	 * @return
+	 */
 	public boolean delayPayment(String bank, String loanID,
 			String currentDueDate, String newDueDate)
 	{
+		// check if given bank name matches current bank server
 		if (bank.equalsIgnoreCase(m_name))
 		{
+			// find the user by loan id
 			User u = m_customerList.getUserByLoanId(loanID);
 			Logger.getInstance().log(getUserLogFileName(u),
 					"Requested to delay a loan to " + newDueDate);
 			Loan loan = null;
 			Loan oldLoan = null;
+			// get the loan object
 			for (Loan l : u.getLoanList())
 			{
 				if (l.getAccount().equals(loanID))
@@ -76,6 +95,9 @@ public class BankServer
 				}
 			}
 
+			// check if given current date matches the date on file,if not
+			// then return false, otherwise, update the loan due date
+			// to the new one
 			if (loan.getDueDate().equals(currentDueDate))
 			{
 				loan.setDueDate(newDueDate);
@@ -113,22 +135,30 @@ public class BankServer
 	public synchronized String getLoan(String bank, String accountNumber,
 			String password, double loanAmount)
 	{
+		//get user by account id
 		User user = m_customerList.getUserByAccountId(accountNumber, password);
 		Logger.getInstance().log(getUserLogFileName(user),
 				"User has requested to get a loan of " + loanAmount);
 
-		/*
-		 * if (user.getCurrentLoanAmount() >= user.getCreditLimit()) {
-		 * Logger.getInstance().log(getUserLogFileName(user),
-		 * "User doesn't have enought credit to apply " + loanAmount); return
-		 * false; }
-		 */
+		//check user loan amount on current server, if it's already
+		//exceeds the credit limit, return null;
+		if (user.calculateCurrentLoanAmount() >= user.getCreditLimit())
+		{
+			Logger.getInstance().log(getUserLogFileName(user),
+					"User doesn't have enought credit to apply " + loanAmount);
+			return null;
+		}
+
+		//generate loan protocol object to send to the other 2 servers 
 		user.calculateCurrentLoanAmount();
 		LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
 				Properties.HOST_NAME, m_udpPort, user, messageType.Request);
+		//set lock, so no action can be done before we get answers from the 
+		//other two servers
 		m_loanRequstLock = new CountDownLatch(2);
 
 		m_udpHandler.setRequestLock(m_loanRequstLock);
+		//send UDP packets
 		for (int i = 0; i < Properties.PORT_POOL.length; i++)
 		{
 			if (Properties.PORT_POOL[i] != m_udpPort)
@@ -146,12 +176,15 @@ public class BankServer
 		}
 		try
 		{
+			//wait for 60 seconds for the answers
 			m_loanRequstLock.await(60, TimeUnit.SECONDS);
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
 		}
 
+		//if user still have credit, then give user the loan
+		//add loan objcet to user loan list
 		if (user.getLoanAmount() + m_udpHandler.getLastRequestResult()
 				+ loanAmount < user.getCreditLimit())
 		{

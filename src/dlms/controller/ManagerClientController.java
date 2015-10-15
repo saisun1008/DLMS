@@ -12,6 +12,11 @@ import dlms.interfaces.CustomerInterface;
 import dlms.interfaces.ManagerInterface;
 import dlms.service.Client;
 
+/**
+ * Class for managers to access manager functions from the RMI object
+ * @author Sai
+ *
+ */
 public class ManagerClientController
 {
 	private Client<ManagerInterface> client = null;
@@ -33,13 +38,7 @@ public class ManagerClientController
 			throws RemoteException, NotBoundException
 	{
 		String host = "localhost";
-		Integer port = Properties.REGISTERY_PORT_POOL[0];
-		return client.getService(host, port, name);
-	}
-
-	public String[] getServices() throws AccessException, RemoteException
-	{
-		return client.getRegistryServices();
+		return client.getService(host, name);
 	}
 
 	public static void main(String[] args)
