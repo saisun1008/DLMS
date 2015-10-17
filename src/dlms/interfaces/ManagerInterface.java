@@ -14,4 +14,6 @@ public interface ManagerInterface extends Remote
 			String currentDueDate, String newDueDate) throws RemoteException;
 
 	public String printCustomerInfo(String bank) throws RemoteException;
+	
+	public boolean login(String username, String password)throws RemoteException;
 }

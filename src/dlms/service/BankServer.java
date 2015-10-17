@@ -82,12 +82,14 @@ public class BankServer
 			User u = m_customerList.getUserByLoanId(loanID);
 			Logger.getInstance().log(getUserLogFileName(u),
 					"Requested to delay a loan to " + newDueDate);
+			Logger.getInstance().log(getManagerLogFileName(),
+					"Requested to delay a loan to " + newDueDate);
 			Loan loan = null;
 			Loan oldLoan = null;
 			// get the loan object
 			for (Loan l : u.getLoanList())
 			{
-				if (l.getAccount().equals(loanID))
+				if (l.getId().equals(loanID))
 				{
 					loan = l;
 					oldLoan = l;
@@ -121,6 +123,8 @@ public class BankServer
 
 	public String printCustomerInfo(String bank)
 	{
+		Logger.getInstance().log(getManagerLogFileName(),
+				"Requested to print all customer info");
 		return m_customerList.getAllCustomerInfoToString();
 	}
 
@@ -137,6 +141,11 @@ public class BankServer
 	{
 		//get user by account id
 		User user = m_customerList.getUserByAccountId(accountNumber, password);
+		
+		if(user == null)
+		{
+			return null;
+		}
 		Logger.getInstance().log(getUserLogFileName(user),
 				"User has requested to get a loan of " + loanAmount);
 
@@ -186,7 +195,7 @@ public class BankServer
 		//if user still have credit, then give user the loan
 		//add loan objcet to user loan list
 		if (user.getLoanAmount() + m_udpHandler.getLastRequestResult()
-				+ loanAmount < user.getCreditLimit())
+				+ loanAmount <= user.getCreditLimit())
 		{
 			String ret = m_customerList.addLoanToUser(user, loanAmount);
 			Logger.getInstance().log(
@@ -240,10 +249,25 @@ public class BankServer
 	{
 		return m_name.toLowerCase() + "/" + u.getUsr() + "_log.txt";
 	}
+	
+	private String getManagerLogFileName()
+	{
+		return m_name.toLowerCase() + "/Manager_log.txt";
+	}
 
 	public String getBankName()
 	{
 		return m_name;
+	}
+	
+	public boolean validateUser(String id, String password)
+	{
+		if(m_customerList.getUserByAccountId(id, password) == null && m_customerList.getUserByUserName(id, password)==null)
+		{
+			return false;
+		}
+		
+		return true;
 	}
 
 }

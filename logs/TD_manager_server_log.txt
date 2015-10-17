@@ -3,3 +3,20 @@ Tue Oct 13 21:42:26 EDT 2015	TD_manager bound on 9005
 Tue Oct 13 21:42:42 EDT 2015	Client has successfully looked up this service
 Tue Oct 13 21:47:35 EDT 2015	Client has successfully looked up this service
 Tue Oct 13 21:48:23 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 13:08:23 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 13:38:31 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 13:42:31 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 13:43:02 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 13:43:44 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 13:44:16 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 13:44:45 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 13:45:22 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 13:45:28 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 13:45:56 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 14:02:03 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 14:11:14 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 14:11:53 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 14:13:40 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 14:13:49 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 14:15:24 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 14:15:32 EDT 2015	Client has successfully looked up this service

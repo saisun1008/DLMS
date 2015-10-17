@@ -35,4 +35,15 @@ public class BankCustomerService implements CustomerInterface
 		return m_server.getLoan(bank, accountNumber, password, loanAmount);
 	}
 
+	/**
+	 * username or account id match with provided password will return true
+	 * otherwise false
+	 */
+	@Override
+	public boolean login(String username, String password)
+			throws RemoteException
+	{
+		return m_server.validateUser(username, password);
+	}
+
 }

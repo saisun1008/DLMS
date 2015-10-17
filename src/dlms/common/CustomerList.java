@@ -443,6 +443,28 @@ public class CustomerList
 		}
 		return ret;
 	}
+	
+	/**
+	 * Get user object from the hashmap by user name
+	 * @param id
+	 * @param psw
+	 * @return
+	 */
+	public User getUserByUserName(String userName, String psw)
+	{
+		User ret = null;
+		for (String key : m_map.keySet())
+		{
+			for (User u : m_map.get(key))
+			{
+				if (u.getUsr().equals(userName) && u.isCorrectPassword(psw))
+				{
+					return u;
+				}
+			}
+		}
+		return ret;
+	}
 
 	/**
 	 * Update existing user object with provided new user object
@@ -475,8 +497,8 @@ public class CustomerList
 	 */
 	public String addLoanToUser(User user, double amount)
 	{
-		Loan loan = new Loan(Utility.generateRandomUniqueId(), amount,
-				Utility.dateToString(Calendar.getInstance().getTime()));
+		Loan loan = new Loan(user.getAccount(), amount,
+				Utility.dateToString(Calendar.getInstance().getTime()).replace("2015", "2020"));
 		user.getLoanList().add(loan);
 		updateUser(user);
 		writeAllCustomerInfoToFiles();
@@ -516,7 +538,7 @@ public class CustomerList
 				{
 					for (Loan l : u.getLoanList())
 					{
-						if (l.getAccount().equals(id))
+						if (l.getId().equals(id))
 							return u;
 					}
 				}

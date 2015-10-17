@@ -154,6 +154,24 @@ public class ServerDisplayMsgs
 		System.out.println(SEPARATOR);
 		return info;
 	}
+	
+	public static String login()
+	{
+		if (m_inputStream == null)
+		{
+			m_inputStream = System.in;
+		}
+		Scanner scan = new Scanner(m_inputStream);
+		String info = "";
+		System.out.println(SEPARATOR);
+		System.out.println("Please enter user name or account id: ");
+		info += scan.nextLine();
+		info += ";;d";
+		System.out.println("Please enter password: ");
+		info += scan.nextLine();
+		System.out.println(SEPARATOR);
+		return info;
+	}
 
 	public static void setInputStream(InputStream inputStream)
 	{

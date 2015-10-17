@@ -16,4 +16,6 @@ public interface CustomerInterface extends Remote
 
 	public String getLoan(String bank, String accountNumber, String password,
 			double loanAmount) throws RemoteException;
+	
+	public boolean login(String username, String password)throws RemoteException;
 }

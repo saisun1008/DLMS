@@ -1,1 +1,2 @@
-1,Manager,Manager,514514514,Manager,manager@bank.com,200000,true
+1445101756803,test,test,4142,1234,test@test.com,200000.0,false
+1,Manager,Manager,514514514,Manager,manager@bank.com,200000.0,true

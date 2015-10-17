@@ -1,5 +1,6 @@
 package dlms.common;
 
+import dlms.common.Configuration;
 /**
  * Property class contains useful global data
  * @author Sai
@@ -8,7 +9,7 @@ package dlms.common;
 public class Properties
 {
 	public final static String HOST_NAME = "localhost";
-	public final static int[] REGISTERY_PORT_POOL = {9005,9006,9007};
+	public final static int[] REGISTERY_PORT_POOL = {Configuration.RMI_SERVER_1_PORT,Configuration.RMI_SERVER_2_PORT,Configuration.RMI_SERVER_3_PORT};
 
 	public enum messageType
 	{
@@ -16,5 +17,5 @@ public class Properties
 	}
 	
 	public final static int[] PORT_POOL = {10000,10001,10002};
-	public final static String[] BANK_NAME_POOL = {"TD","BMO","SCOTIA"};
+	public final static String[] BANK_NAME_POOL = {Configuration.RMI_SERVER_1_NAME,Configuration.RMI_SERVER_2_NAME,Configuration.RMI_SERVER_3_NAME};
 }

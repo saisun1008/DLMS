@@ -81,6 +81,17 @@ public class ManagerClientController
 						choice);
 				ManagerInterface service = controller
 						.getManagerBankServer(name);
+				
+				System.out
+				.println("Please log in");
+				
+				String[] userInfo = ServerDisplayMsgs.login().split(";;d");
+				if(!service.login(userInfo[0], userInfo[1]))
+				{
+					System.out
+					.println("Wrong user name or password, exiting");
+					continue;
+				}
 				switch (ServerDisplayMsgs.printManagerOps())
 				{
 				case 1:

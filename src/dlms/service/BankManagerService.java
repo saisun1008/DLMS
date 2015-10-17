@@ -31,4 +31,15 @@ public class BankManagerService implements ManagerInterface
 		return m_server.printCustomerInfo(bank);
 	}
 
+	/**
+	 * username or account id match with provided password will return true
+	 * otherwise false
+	 */
+	@Override
+	public boolean login(String username, String password)
+			throws RemoteException
+	{
+		return m_server.validateUser(username, password);
+	}
+
 }
