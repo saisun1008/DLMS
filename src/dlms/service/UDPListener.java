@@ -11,7 +11,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.concurrent.CountDownLatch;
 
-import dlms.common.Properties.messageType;
+import dlms.common.Configuration.messageType;
 import dlms.common.User;
 import dlms.common.protocol.LoanProtocol;
 

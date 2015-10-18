@@ -2,8 +2,8 @@ package dlms.common.protocol;
 
 import java.io.Serializable;
 
+import dlms.common.Configuration.messageType;
 import dlms.common.Loan;
-import dlms.common.Properties.messageType;
 import dlms.common.User;
 
 /**

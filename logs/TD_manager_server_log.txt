@@ -20,3 +20,6 @@ Sat Oct 17 14:13:40 EDT 2015	TD_manager bound on 9005
 Sat Oct 17 14:13:49 EDT 2015	Client has successfully looked up this service
 Sat Oct 17 14:15:24 EDT 2015	TD_manager bound on 9005
 Sat Oct 17 14:15:32 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 19:02:00 EDT 2015	TD_manager bound on 9005
+Sat Oct 17 19:02:12 EDT 2015	Client has successfully looked up this service
+Sat Oct 17 22:25:20 EDT 2015	TD_manager bound on 9005

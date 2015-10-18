@@ -3,7 +3,7 @@ package dlms.controller;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
-import dlms.common.Properties;
+import dlms.common.Configuration;
 import dlms.interfaces.CustomerInterface;
 import dlms.interfaces.ManagerInterface;
 import dlms.service.BankServer;
@@ -64,10 +64,10 @@ public class ServerController
 	public static void main(String[] args)
 	{
 		ServerController controller = new ServerController();
-		for (int i = 0; i < Properties.BANK_NAME_POOL.length; i++)
+		for (int i = 0; i < Configuration.BANK_NAME_POOL.length; i++)
 		{
-			controller.addServer(Properties.BANK_NAME_POOL[i],
-					Properties.PORT_POOL[i], Properties.REGISTERY_PORT_POOL[i]);
+			controller.addServer(Configuration.BANK_NAME_POOL[i],
+					Configuration.PORT_POOL[i], Configuration.REGISTERY_PORT_POOL[i]);
 		}
 		controller.startServers();
 	}

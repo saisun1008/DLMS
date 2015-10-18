@@ -21,7 +21,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import dlms.common.Properties;
+import dlms.common.Configuration;
 
 public class Utility
 {
@@ -132,10 +132,10 @@ public class Utility
 	public static int getRMIPortByBankName(String name)
 	{
 		int ret = getIndexFromArray(name.toUpperCase(),
-				Properties.BANK_NAME_POOL);
+				Configuration.BANK_NAME_POOL);
 		if (ret != -1)
 		{
-			return Properties.REGISTERY_PORT_POOL[ret];
+			return Configuration.REGISTERY_PORT_POOL[ret];
 		} else
 		{
 			return -1;
@@ -160,16 +160,16 @@ public class Utility
 		{
 			System.setSecurityManager(new SecurityManager());
 		}
-		for (int i = 0; i < Properties.BANK_NAME_POOL.length; i++)
+		for (int i = 0; i < Configuration.BANK_NAME_POOL.length; i++)
 		{
 			try
 			{
 				Registry registry = LocateRegistry
-						.getRegistry(Properties.HOST_NAME,
-								Properties.REGISTERY_PORT_POOL[i]);
+						.getRegistry(Configuration.HOST_NAME,
+								Configuration.REGISTERY_PORT_POOL[i]);
 				for (String str : registry.list())
 				{
-					list.add("[localhost:" + Properties.REGISTERY_PORT_POOL[i]
+					list.add("[localhost:" + Configuration.REGISTERY_PORT_POOL[i]
 							+ "] : " + str);
 				}
 

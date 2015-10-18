@@ -6,8 +6,8 @@ import java.util.concurrent.TimeUnit;
 
 import dlms.common.CustomerList;
 import dlms.common.Loan;
-import dlms.common.Properties;
-import dlms.common.Properties.messageType;
+import dlms.common.Configuration;
+import dlms.common.Configuration.messageType;
 import dlms.common.User;
 import dlms.common.protocol.LoanProtocol;
 import dlms.common.util.Logger;
@@ -72,7 +72,7 @@ public class BankServer
 	 * @param newDueDate
 	 * @return
 	 */
-	public boolean delayPayment(String bank, String loanID,
+	public synchronized boolean delayPayment(String bank, String loanID,
 			String currentDueDate, String newDueDate)
 	{
 		// check if given bank name matches current bank server
@@ -161,21 +161,21 @@ public class BankServer
 		//generate loan protocol object to send to the other 2 servers 
 		user.calculateCurrentLoanAmount();
 		LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
-				Properties.HOST_NAME, m_udpPort, user, messageType.Request);
+				Configuration.HOST_NAME, m_udpPort, user, messageType.Request);
 		//set lock, so no action can be done before we get answers from the 
 		//other two servers
 		m_loanRequstLock = new CountDownLatch(2);
 
 		m_udpHandler.setRequestLock(m_loanRequstLock);
 		//send UDP packets
-		for (int i = 0; i < Properties.PORT_POOL.length; i++)
+		for (int i = 0; i < Configuration.PORT_POOL.length; i++)
 		{
-			if (Properties.PORT_POOL[i] != m_udpPort)
+			if (Configuration.PORT_POOL[i] != m_udpPort)
 			{
 				try
 				{
-					Utility.sendUDPPacket(Properties.HOST_NAME,
-							Properties.PORT_POOL[i], p);
+					Utility.sendUDPPacket(Configuration.HOST_NAME,
+							Configuration.PORT_POOL[i], p);
 
 				} catch (IOException e)
 				{

@@ -5,7 +5,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.Scanner;
 
-import dlms.common.Properties;
+import dlms.common.Configuration;
 import dlms.common.util.ServerDisplayMsgs;
 import dlms.common.util.Utility;
 import dlms.interfaces.CustomerInterface;
@@ -48,7 +48,7 @@ public class CustomerClientController
 			throws RemoteException, NotBoundException
 	{
 		String host = "localhost";
-		return client.getService(host, name);
+		return client.getService(name);
 	}
 
 	public static void main(String[] args)

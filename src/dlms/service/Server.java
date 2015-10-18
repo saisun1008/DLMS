@@ -22,7 +22,7 @@ public class Server<T extends Remote>
 	private boolean terminate = false;
 
 	/**
-	 *
+	 * Start server, bind service to a given port
 	 * @param objectInterface
 	 *            Generic interface of server wishing to start
 	 * @param serviceName

@@ -27,18 +27,14 @@ public class Client<T extends Remote>
 	}
 
 	/**
-	 *
-	 * @param ip
-	 *            String of RMI server
-	 * @param port
-	 *            int of port service is bound on
+	 *Look for a service from the registry
 	 * @param serviceName
 	 *            String name of service
 	 * @return Generic object found at the server
 	 * @throws RemoteException
 	 * @throws NotBoundException
 	 */
-	public T getService(String ip, String serviceName)
+	public T getService(String serviceName)
 			throws RemoteException, NotBoundException
 	{
 		T server = (T) registry.lookup(serviceName);
