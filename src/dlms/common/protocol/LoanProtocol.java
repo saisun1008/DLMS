@@ -25,6 +25,8 @@ public class LoanProtocol implements Serializable
 	private User m_usr;
 	//protocol type: request or answer
 	private messageType m_type;
+	
+	private Loan m_loanToBeTransfered= null;
 
 	public LoanProtocol(String id, String host, int port, User usr,
 			messageType type)
@@ -35,6 +37,17 @@ public class LoanProtocol implements Serializable
 		m_usr = usr;
 		m_type = type;
 	}
+	
+   public LoanProtocol(String id, String host, int port, User usr,
+            messageType type, Loan loan)
+    {
+        m_id = id;
+        m_host = host;
+        m_port = port;
+        m_usr = usr;
+        m_type = type;
+        m_loanToBeTransfered = loan;
+    }
 
 	public String getId()
 	{
@@ -79,6 +92,11 @@ public class LoanProtocol implements Serializable
 	public messageType getType()
 	{
 		return m_type;
+	}
+	
+	public Loan getLoanInfo()
+	{
+	    return m_loanToBeTransfered;
 	}
 
 }

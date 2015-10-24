@@ -160,11 +160,11 @@ public class UDPListener implements Runnable
 		switch (protocol.getType())
 		{
 		//if it's a requesting protocol, then generate answer for it
-		case Request:
+		case RequestLoan:
 			return generateAnswer(protocol);
 	    //if it's an answer from another server, then calculate 
 		//how many loan the user has on the other server
-		case Answer:
+		case LoanAnswer:
 			if (protocol.getUser() != null)
 			{
 				m_usedAmount += protocol.getUser().getLoanAmount();
@@ -189,7 +189,7 @@ public class UDPListener implements Runnable
 			user.calculateCurrentLoanAmount();
 		}
 		LoanProtocol answer = new LoanProtocol(request.getId(),
-				request.getHost(), request.getPort(), user, messageType.Answer);
+				request.getHost(), request.getPort(), user, messageType.LoanAnswer);
 		return answer;
 	}
 
