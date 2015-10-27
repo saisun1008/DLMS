@@ -20,6 +20,11 @@ public class Configuration {
 	public static final int RMI_SERVER_2_PORT = 9006;
 	public static final int RMI_SERVER_3_PORT = 9007;
 	
+	public static final int CORBA_NAMING_SERVICE_PORT = 9010;
+	
+	//host name where corba naming service is running on, default is localhost
+	public static String CORBA_NAMING_SERVICE_HOST = "localhost";
+	
 	public final static String HOST_NAME = "localhost";
 	//pool of rmi ports
 	public final static int[] REGISTERY_PORT_POOL = {Configuration.RMI_SERVER_1_PORT,Configuration.RMI_SERVER_2_PORT,Configuration.RMI_SERVER_3_PORT};
@@ -33,4 +38,6 @@ public class Configuration {
 	public final static int[] PORT_POOL = {10000,10001,10002};
 	//bank name pool
 	public final static String[] BANK_NAME_POOL = {Configuration.RMI_SERVER_1_NAME,Configuration.RMI_SERVER_2_NAME,Configuration.RMI_SERVER_3_NAME};
+	
+	
 }

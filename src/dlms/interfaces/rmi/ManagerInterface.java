@@ -1,4 +1,4 @@
-package dlms.interfaces;
+package dlms.interfaces.rmi;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;

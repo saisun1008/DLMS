@@ -1,0 +1,10 @@
+#ECP Compilation Preferences
+#Tue Oct 27 14:09:00 EDT 2015
+.INVOKE_COMPILERS=net.sf.eclipscorba.compiler.openorb
+.GENERATE_SKELETONS=true
+.CUSTOM_OPTIONS=false
+.INCLUDE_PATHS=
+.GENERATE_STUBS=true
+.GENERATE_TIES=false
+.COMPILE=false
+.OUTPUT_DIRECTORY=C\:\\Users\\ecqiguo\\git\\DLMS\\src\\dlms\\interfaces\\corba

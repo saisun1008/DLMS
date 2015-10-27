@@ -10,6 +10,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -181,5 +182,22 @@ public class Utility
 		}
 
 		return list.toArray(new String[list.size()]);
+	}
+	
+	/**
+	 * Start corba naming service thread on a given port
+	 * @param port port number that naming service will be running on
+	 * @return
+	 * @throws UnknownHostException 
+	 */
+	public static ServiceThread launchCorbaNamingService(int port) throws UnknownHostException
+	{
+	    Configuration.CORBA_NAMING_SERVICE_HOST = InetAddress.getLocalHost().getHostAddress();
+	    String line = System.getProperty("java.home");
+        String startCmd = "\"" + line.replace("\n", "").replace("\r", "")
+                + "\\bin\\tnameserv\" -ORBInitialPort " + port + "&";
+        ServiceThread namingService = new ServiceThread(startCmd);
+        namingService.run();
+        return namingService;
 	}
 }

@@ -1,13 +1,13 @@
-package dlms.controller;
+package dlms.controller.rmi;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 import dlms.common.Configuration;
-import dlms.interfaces.CustomerInterface;
-import dlms.interfaces.ManagerInterface;
+import dlms.interfaces.rmi.CustomerInterface;
+import dlms.interfaces.rmi.ManagerInterface;
 import dlms.service.BankServer;
-import dlms.service.Server;
+import dlms.service.rmi.Server;
 
 /**
  * Class to start bank servers

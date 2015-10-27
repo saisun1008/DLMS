@@ -1,4 +1,4 @@
-package dlms.service;
+package dlms.service.rmi;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;

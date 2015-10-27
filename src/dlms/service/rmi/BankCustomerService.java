@@ -1,8 +1,9 @@
-package dlms.service;
+package dlms.service.rmi;
 
 import java.rmi.RemoteException;
 
-import dlms.interfaces.CustomerInterface;
+import dlms.interfaces.rmi.CustomerInterface;
+import dlms.service.BankServer;
 
 /**
  * RMI Customer service implementation

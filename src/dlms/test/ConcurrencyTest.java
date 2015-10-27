@@ -4,8 +4,8 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.util.concurrent.CountDownLatch;
 
-import dlms.controller.CustomerClientController;
-import dlms.interfaces.CustomerInterface;
+import dlms.controller.rmi.CustomerClientController;
+import dlms.interfaces.rmi.CustomerInterface;
 
 public class ConcurrencyTest implements Runnable
 {

@@ -12,6 +12,9 @@ import dlms.common.User;
 import dlms.common.protocol.LoanProtocol;
 import dlms.common.util.Logger;
 import dlms.common.util.Utility;
+import dlms.service.corba.CorbaBankService;
+import dlms.service.rmi.BankCustomerService;
+import dlms.service.rmi.BankManagerService;
 
 /**
  * Bank server class contains customer and manager services, and it owns a UDP
@@ -27,6 +30,8 @@ public class BankServer
     private CustomerList m_customerList;
     private BankManagerService m_managerService;
     private BankCustomerService m_customerService;
+    private CorbaBankService m_corbaService;
+    private Thread m_corbaThread;
     private UDPListener m_udpHandler;
     private int m_rmiPort;
     private int m_udpPort;
@@ -38,7 +43,7 @@ public class BankServer
     private CountDownLatch m_loanRequstLock = null;
 
     /**
-     * Constructor, initialize data structures
+     * Constructor for java RMI, initialize data structures
      * 
      * @param name
      *            name of the bank
@@ -50,11 +55,41 @@ public class BankServer
         m_name = name;
         m_customerList = new CustomerList(name);
         m_customerList.loadMap();
-        setManagerService(new BankManagerService(this));
-        setCustomerService(new BankCustomerService(this));
+        
+        /*This was for RMI before
+         * setManagerService(new BankManagerService(this));
+        setCustomerService(new BankCustomerService(this));*/
+        m_corbaService = new CorbaBankService(this);
+        m_corbaThread = new Thread(m_corbaService);
+        m_corbaThread.start();
+        
+        
         m_udpHandler = new UDPListener(udpPort, this);
         m_udpHandler.startListening();
         m_rmiPort = rmiPort;
+        m_udpPort = udpPort;
+    }
+    
+    /**
+     * Constructor for corba, initialize data structures
+     * @param name
+     *            name of the bank
+     * @param udpPort
+     *            port of the UDP listening will be listening on
+     */
+    public BankServer(String name, int udpPort)
+    {
+        m_name = name;
+        m_customerList = new CustomerList(name);
+        m_customerList.loadMap();
+        
+        m_corbaService = new CorbaBankService(this);
+        m_corbaThread = new Thread(m_corbaService);
+        m_corbaThread.start();
+        
+        
+        m_udpHandler = new UDPListener(udpPort, this);
+        m_udpHandler.startListening();
         m_udpPort = udpPort;
     }
 
@@ -309,6 +344,19 @@ public class BankServer
     {
         if (m_customerList.getUserByAccountId(id, password) == null
                 && m_customerList.getUserByUserName(id, password) == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+    
+    public boolean validateAdminUser(String id, String password)
+    {
+        if (m_customerList.getUserByUserName(id, password) == null)
+        {
+            return false;
+        }else if(!m_customerList.getUserByUserName(id, password).isAdmin())
         {
             return false;
         }

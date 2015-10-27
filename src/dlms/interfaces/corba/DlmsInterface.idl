@@ -1,0 +1,18 @@
+module DlmsInterfaceModule {
+	interface DlmsInterface
+{
+    string openAccount(in string bank, in string firstName, in string lastName,
+            in string emailAddress, in string phoneNumber, in string password);
+
+    string getLoan(in string bank, in string accountNumber, in string password,
+            in double loanAmount);
+    
+    boolean delayPayment(in string bank, in string loanID,
+            in string currentDueDate, in string newDueDate);
+
+    string printCustomerInfo(in string bank);
+    string transferLoan (in string LoanID, in string CurrentBank, in string OtherBank);
+    
+    boolean login(in string userName, in string password);
+};
+};

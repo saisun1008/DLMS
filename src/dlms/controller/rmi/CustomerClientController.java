@@ -1,4 +1,4 @@
-package dlms.controller;
+package dlms.controller.rmi;
 
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
@@ -8,8 +8,8 @@ import java.util.Scanner;
 import dlms.common.Configuration;
 import dlms.common.util.ServerDisplayMsgs;
 import dlms.common.util.Utility;
-import dlms.interfaces.CustomerInterface;
-import dlms.service.Client;
+import dlms.interfaces.rmi.CustomerInterface;
+import dlms.service.rmi.Client;
 
 /**
  * Class for customers to access bank customer services
