@@ -234,5 +234,30 @@ public class User implements Serializable
 	{
 		return pri_creditLimit;
 	}
+	
+	public String getFirstName()
+	{
+		return pri_firstName;
+	}
+	
+	public String getLastName()
+	{
+		return pri_lastName;
+	}
+	
+	public String getEmail()
+	{
+		return pri_email;
+	}
+	
+	public String getPhone()
+	{
+		return pri_phone;
+	}
+	
+	public String getPassword()
+	{
+		return pri_psw;
+	}
 
 }

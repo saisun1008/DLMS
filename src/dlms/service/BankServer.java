@@ -311,34 +311,52 @@ public class BankServer
     }
     
     /**
-     * Remove a specific loan from user
-     * and update the txt files
-     * @param loan loan to be removed
-     * @return
-     */
-    public boolean removeLoan(Loan loan)
-    {
-        synchronized (m_customerList)
-        {
-            User usr = m_customerList.getUserByLoanId(loan.getId());
-            usr.getLoanList().remove(loan);
-            m_customerList.updateUser(usr);
-            m_customerList.writeAllCustomerInfoToFiles();
-        }
-        return true;
-    }
-    
-    public boolean acceptTransferedLoan(User user, Loan loan)
-    {
-        synchronized (m_customerList)
-        {
-            User usr = m_customerList.getUserByLoanId(loan.getId());
-            usr.getLoanList().remove(loan);
-            m_customerList.updateUser(usr);
-            m_customerList.writeAllCustomerInfoToFiles();
-        }
-        return true;
-    }
+	 * Remove a specific loan from user and update the txt files
+	 * 
+	 * @param loan
+	 *            loan to be removed
+	 * @return
+	 */
+	public boolean removeLoan(Loan loan)
+	{
+		synchronized (m_customerList)
+		{
+			// find user by loan id
+			User usr = m_customerList.getUserByLoanId(loan.getId());
+			// remove loan from user loan list
+			usr.getLoanList().remove(loan);
+			// write all info back to txt file
+			m_customerList.writeAllCustomerInfoToFiles();
+		}
+		return true;
+	}
+
+	/**
+	 * Accept loan transfer and put loan into user object
+	 * @param user
+	 * @param loan
+	 * @return
+	 */
+	public boolean acceptTransferedLoan(User user, Loan loan)
+	{
+		synchronized (m_customerList)
+		{
+			// first check if user exists
+			boolean exist = m_customerList.isUserExist(user);
+			if (exist)
+			{
+				m_customerList.getUser(user).getLoanList().add(loan);
+			} else
+			{
+				m_customerList.addCustomer(m_name, user.getFirstName(),
+						user.getLastName(), user.getEmail(), user.getPhone(),
+						user.getPassword());
+				m_customerList.getUser(user).getLoanList().add(loan);
+			}
+			m_customerList.writeAllCustomerInfoToFiles();
+		}
+		return true;
+	}
 
     public boolean validateUser(String id, String password)
     {
