@@ -98,5 +98,10 @@ public class LoanProtocol implements Serializable
 	{
 	    return m_loanToBeTransfered;
 	}
+	
+	public void setType(messageType type)
+	{
+	    m_type = type;
+	}
 
 }

@@ -7,7 +7,9 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import dlms.common.Configuration.messageType;
 import dlms.common.protocol.LoanProtocol;
+import dlms.common.util.Utility;
 
 public class TCPListener implements Runnable
 {
@@ -77,26 +79,21 @@ public class TCPListener implements Runnable
 
     private LoanProtocol ProcessTransferAnswer(LoanProtocol protocol)
     {
-        return null;
+        m_server.removeLoan(protocol.getLoanInfo());
+        return protocol; 
     }
 
     private LoanProtocol ProcessTransferRequest(LoanProtocol protocol)
     {
-        return null;
+        protocol.setType(messageType.TransferAnswer);
+        return protocol;
     }
 
     private void sendReply(LoanProtocol protocol)
     {
         try
         {
-            Socket socket = new Socket(protocol.getHost(), protocol.getPort());
-            
-            ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-            
-            outputStream.writeObject(protocol);
-            
-            outputStream.close();
-            socket.close();
+            Utility.sendMessageOverTcp(protocol,protocol.getHost(),protocol.getPort());
         } catch (UnknownHostException e)
         {
             e.printStackTrace();
@@ -107,6 +104,6 @@ public class TCPListener implements Runnable
 
         // if nothing wrong happened during the reply phase, then we can add the
         // transfered loan into hashmap now
+        m_server.acceptTransferedLoan(protocol.getUser(), protocol.getLoanInfo());
     }
-
 }

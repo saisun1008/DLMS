@@ -137,6 +137,13 @@ public class CorbaClientController
                 }
                 break;
             case 4:
+                System.out.println("Please enter credentials for manager user");
+                String[] userinfo = ServerDisplayMsgs.login().split(";;d");
+                if(!service.login(userinfo[0], userinfo[1]))
+                {
+                    System.out.println("failed to log in as a manager user");
+                    continue;
+                }
                 String[] info3 = ServerDisplayMsgs.delayLoan().split(";;d");
                 boolean ret1 = service.delayPayment(bank, info3[0], info3[1],
                         info3[2]);
@@ -150,6 +157,13 @@ public class CorbaClientController
                 }
                 break;
             case 5:
+                System.out.println("Please enter credentials for manager user");
+                String[] userinfo1 = ServerDisplayMsgs.login().split(";;d");
+                if(!service.login(userinfo1[0], userinfo1[1]))
+                {
+                    System.out.println("failed to log in as a manager user");
+                    continue;
+                }
                 String result1 = service.printCustomerInfo(bank);
                 for (String str : result1.split("\n"))
                 {

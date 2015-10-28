@@ -9,6 +9,7 @@ import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -23,6 +24,7 @@ import java.util.Date;
 import java.util.Locale;
 
 import dlms.common.Configuration;
+import dlms.common.protocol.LoanProtocol;
 
 public class Utility
 {
@@ -200,4 +202,17 @@ public class Utility
         namingService.run();
         return namingService;
 	}
+	
+    
+    public static void sendMessageOverTcp(LoanProtocol protocol, String host, int port) throws UnknownHostException, IOException
+    {
+        Socket socket = new Socket(host, port);
+        
+        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
+        
+        outputStream.writeObject(protocol);
+        
+        outputStream.close();
+        socket.close();
+    }
 }

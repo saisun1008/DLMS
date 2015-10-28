@@ -63,7 +63,7 @@ public class CorbaBankService extends DlmsInterfacePOA implements Runnable
     public String transferLoan(String LoanID, String CurrentBank,
             String OtherBank)
     {
-        return null;
+        return m_server.transferLoan(LoanID,CurrentBank,OtherBank);
     }
 
     @Override

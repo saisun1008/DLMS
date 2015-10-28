@@ -382,4 +382,10 @@ public class BankServer
         return true;
     }
 
+    public String transferLoan(String loanID, String currentBank,
+            String otherBank)
+    {
+        return null;
+    }
+
 }
