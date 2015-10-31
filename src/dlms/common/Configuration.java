@@ -36,6 +36,9 @@ public class Configuration {
 	
 	//pool of udp ports
 	public final static int[] PORT_POOL = {10000,10001,10002};
+	
+	//pool of tcp ports
+    public final static int[] TCP_PORT_POOL = {10003,10004,10005};
 	//bank name pool
 	public final static String[] BANK_NAME_POOL = {Configuration.RMI_SERVER_1_NAME,Configuration.RMI_SERVER_2_NAME,Configuration.RMI_SERVER_3_NAME};
 	

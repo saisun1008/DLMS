@@ -144,6 +144,19 @@ public class Utility
 			return -1;
 		}
 	}
+	
+	public static int getTCPPortByBankName(String name)
+	{
+		int ret = getIndexFromArray(name.toUpperCase(),
+				Configuration.BANK_NAME_POOL);
+		if (ret != -1)
+		{
+			return Configuration.TCP_PORT_POOL[ret];
+		} else
+		{
+			return -1;
+		}
+	}
 
 	public static String generateRandomUniqueId()
 	{

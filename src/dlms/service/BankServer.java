@@ -26,291 +26,297 @@ import dlms.service.rmi.BankManagerService;
 public class BankServer
 {
 
-    private String m_name;
-    private CustomerList m_customerList;
-    private BankManagerService m_managerService;
-    private BankCustomerService m_customerService;
-    private CorbaBankService m_corbaService;
-    private Thread m_corbaThread;
-    private UDPListener m_udpHandler;
-    private int m_rmiPort;
-    private int m_udpPort;
-    // lock the main thread after a loan request to other two banks are sent,
-    // unlock the thread once the other two banks have responded, if no one
-    // respond, then request fails, if one of the bank responds, then use the
-    // data received from that bank and current bank to decide if customer can
-    // get the loan
-    private CountDownLatch m_loanRequstLock = null;
+	private String m_name;
+	private CustomerList m_customerList;
+	private BankManagerService m_managerService;
+	private BankCustomerService m_customerService;
+	private CorbaBankService m_corbaService;
+	private Thread m_corbaThread;
+	private UDPListener m_udpHandler;
+	private int m_rmiPort;
+	private int m_udpPort;
+	private int m_tcpPort;
+	// lock the main thread after a loan request to other two banks are sent,
+	// unlock the thread once the other two banks have responded, if no one
+	// respond, then request fails, if one of the bank responds, then use the
+	// data received from that bank and current bank to decide if customer can
+	// get the loan
+	private CountDownLatch m_loanRequstLock = null;
+	private TCPListener m_tcpHandler;
+	private CountDownLatch m_loanTransferLock;
 
-    /**
-     * Constructor for java RMI, initialize data structures
-     * 
-     * @param name
-     *            name of the bank
-     * @param udpPort
-     *            port of the UDP listening will be listening on
-     */
-    public BankServer(String name, int udpPort, int rmiPort)
-    {
-        m_name = name;
-        m_customerList = new CustomerList(name);
-        m_customerList.loadMap();
-        
-        /*This was for RMI before
-         * setManagerService(new BankManagerService(this));
-        setCustomerService(new BankCustomerService(this));*/
-        m_corbaService = new CorbaBankService(this);
-        m_corbaThread = new Thread(m_corbaService);
-        m_corbaThread.start();
-        
-        
-        m_udpHandler = new UDPListener(udpPort, this);
-        m_udpHandler.startListening();
-        m_rmiPort = rmiPort;
-        m_udpPort = udpPort;
-    }
-    
-    /**
-     * Constructor for corba, initialize data structures
-     * @param name
-     *            name of the bank
-     * @param udpPort
-     *            port of the UDP listening will be listening on
-     */
-    public BankServer(String name, int udpPort)
-    {
-        m_name = name;
-        m_customerList = new CustomerList(name);
-        m_customerList.loadMap();
-        
-        m_corbaService = new CorbaBankService(this);
-        m_corbaThread = new Thread(m_corbaService);
-        m_corbaThread.start();
-        
-        
-        m_udpHandler = new UDPListener(udpPort, this);
-        m_udpHandler.startListening();
-        m_udpPort = udpPort;
-    }
+	/**
+	 * Constructor for java RMI, initialize data structures
+	 * 
+	 * @param name
+	 *            name of the bank
+	 * @param udpPort
+	 *            port of the UDP listening will be listening on
+	 */
+	public BankServer(String name, int udpPort, int rmiPort)
+	{
+		m_name = name;
+		m_customerList = new CustomerList(name);
+		m_customerList.loadMap();
 
-    public int getRmiPort()
-    {
-        return m_rmiPort;
-    }
+		/*
+		 * This was for RMI before setManagerService(new
+		 * BankManagerService(this)); setCustomerService(new
+		 * BankCustomerService(this));
+		 */
+		m_corbaService = new CorbaBankService(this);
+		m_corbaThread = new Thread(m_corbaService);
+		m_corbaThread.start();
 
-    /**
-     * Delay a loan payment
-     * 
-     * @param bank
-     * @param loanID
-     * @param currentDueDate
-     * @param newDueDate
-     * @return
-     */
-    public boolean delayPayment(String bank, String loanID,
-            String currentDueDate, String newDueDate)
-    {
-        // check if given bank name matches current bank server
-        if (bank.equalsIgnoreCase(m_name))
-        {
-            synchronized (m_customerList)
-            {
-                // find the user by loan id
-                User u = m_customerList.getUserByLoanId(loanID);
-                Logger.getInstance().log(getUserLogFileName(u),
-                        "Requested to delay a loan to " + newDueDate);
-                Logger.getInstance().log(getManagerLogFileName(),
-                        "Requested to delay a loan to " + newDueDate);
-                Loan loan = null;
-                Loan oldLoan = null;
-                // get the loan object
-                for (Loan l : u.getLoanList())
-                {
-                    if (l.getId().equals(loanID))
-                    {
-                        loan = l;
-                        oldLoan = l;
-                        break;
-                    }
-                }
+		m_udpHandler = new UDPListener(udpPort, this);
+		m_udpHandler.startListening();
+		m_rmiPort = rmiPort;
+		m_udpPort = udpPort;
+	}
 
-                // check if given current date matches the date on file,if not
-                // then return false, otherwise, update the loan due date
-                // to the new one
-                if (loan.getDueDate().equals(currentDueDate))
-                {
-                    loan.setDueDate(newDueDate);
-                    u.getLoanList().remove(oldLoan);
-                    u.getLoanList().add(loan);
-                    m_customerList.updateUser(u);
-                    m_customerList.writeAllCustomerInfoToFiles();
-                    Logger.getInstance().log(
-                            getUserLogFileName(u),
-                            "Successfully requested to delay a loan to "
-                                    + newDueDate);
-                    return true;
+	/**
+	 * Constructor for corba, initialize data structures
+	 * 
+	 * @param name
+	 *            name of the bank
+	 * @param udpPort
+	 *            port of the UDP listening will be listening on
+	 */
+	public BankServer(int udpPort, int tcpPort, String name)
+	{
+		m_name = name;
+		m_customerList = new CustomerList(name);
+		m_customerList.loadMap();
 
-                } else
-                {
-                    Logger.getInstance().log(getUserLogFileName(u),
-                            "Current due date doesn't match due date on file");
-                }
-            }
-        }
-        return false;
-    }
+		m_corbaService = new CorbaBankService(this);
+		m_corbaThread = new Thread(m_corbaService);
+		m_corbaThread.start();
 
-    public String printCustomerInfo(String bank)
-    {
-        Logger.getInstance().log(getManagerLogFileName(),
-                "Requested to print all customer info");
-        return m_customerList.getAllCustomerInfoToString();
-    }
+		m_udpHandler = new UDPListener(udpPort, this);
+		m_udpHandler.startListening();
+		m_udpPort = udpPort;
+		m_tcpPort = tcpPort;
+		m_tcpHandler = new TCPListener(tcpPort, this);
+		m_tcpHandler.startListener();
+	}
 
-    public String openAccount(String bank, String firstName,
-            String lastName, String emailAddress, String phoneNumber,
-            String password)
-    {
-        synchronized (m_customerList)
-        {
-            return m_customerList.addCustomer(bank, firstName, lastName,
-                    emailAddress, phoneNumber, password);
-        }
-    }
+	public int getRmiPort()
+	{
+		return m_rmiPort;
+	}
 
-    public String getLoan(String bank, String accountNumber, String password,
-            double loanAmount)
-    {
-        synchronized (m_customerList)
-        {
+	/**
+	 * Delay a loan payment
+	 * 
+	 * @param bank
+	 * @param loanID
+	 * @param currentDueDate
+	 * @param newDueDate
+	 * @return
+	 */
+	public boolean delayPayment(String bank, String loanID,
+			String currentDueDate, String newDueDate)
+	{
+		// check if given bank name matches current bank server
+		if (bank.equalsIgnoreCase(m_name))
+		{
+			synchronized (m_customerList)
+			{
+				// find the user by loan id
+				User u = m_customerList.getUserByLoanId(loanID);
+				Logger.getInstance().log(getUserLogFileName(u),
+						"Requested to delay a loan to " + newDueDate);
+				Logger.getInstance().log(getManagerLogFileName(),
+						"Requested to delay a loan to " + newDueDate);
+				Loan loan = null;
+				Loan oldLoan = null;
+				// get the loan object
+				for (Loan l : u.getLoanList())
+				{
+					if (l.getId().equals(loanID))
+					{
+						loan = l;
+						oldLoan = l;
+						break;
+					}
+				}
 
-            // get user by account id
-            User user = m_customerList.getUserByAccountId(accountNumber,
-                    password);
+				// check if given current date matches the date on file,if not
+				// then return false, otherwise, update the loan due date
+				// to the new one
+				if (loan.getDueDate().equals(currentDueDate))
+				{
+					loan.setDueDate(newDueDate);
+					u.getLoanList().remove(oldLoan);
+					u.getLoanList().add(loan);
+					m_customerList.updateUser(u);
+					m_customerList.writeAllCustomerInfoToFiles();
+					Logger.getInstance().log(
+							getUserLogFileName(u),
+							"Successfully requested to delay a loan to "
+									+ newDueDate);
+					return true;
 
-            if (user == null)
-            {
-                return null;
-            }
-            Logger.getInstance().log(getUserLogFileName(user),
-                    "User has requested to get a loan of " + loanAmount);
+				} else
+				{
+					Logger.getInstance().log(getUserLogFileName(u),
+							"Current due date doesn't match due date on file");
+				}
+			}
+		}
+		return false;
+	}
 
-            // check user loan amount on current server, if it's already
-            // exceeds the credit limit, return null;
-            if (user.calculateCurrentLoanAmount() >= user.getCreditLimit())
-            {
-                Logger.getInstance().log(
-                        getUserLogFileName(user),
-                        "User doesn't have enought credit to apply "
-                                + loanAmount);
-                return null;
-            }
+	public String printCustomerInfo(String bank)
+	{
+		Logger.getInstance().log(getManagerLogFileName(),
+				"Requested to print all customer info");
+		return m_customerList.getAllCustomerInfoToString();
+	}
 
-            // generate loan protocol object to send to the other 2 servers
-            user.calculateCurrentLoanAmount();
-            LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
-                    Configuration.HOST_NAME, m_udpPort, user,
-                    messageType.RequestLoan);
-            // set lock, so no action can be done before we get answers from the
-            // other two servers
-            m_loanRequstLock = new CountDownLatch(2);
+	public String openAccount(String bank, String firstName, String lastName,
+			String emailAddress, String phoneNumber, String password)
+	{
+		synchronized (m_customerList)
+		{
+			return m_customerList.addCustomer(bank, firstName, lastName,
+					emailAddress, phoneNumber, password);
+		}
+	}
 
-            m_udpHandler.setRequestLock(m_loanRequstLock);
-            // send UDP packets
-            for (int i = 0; i < Configuration.PORT_POOL.length; i++)
-            {
-                if (Configuration.PORT_POOL[i] != m_udpPort)
-                {
-                    try
-                    {
-                        Utility.sendUDPPacket(Configuration.HOST_NAME,
-                                Configuration.PORT_POOL[i], p);
+	public String getLoan(String bank, String accountNumber, String password,
+			double loanAmount)
+	{
+		synchronized (m_customerList)
+		{
 
-                    } catch (IOException e)
-                    {
-                        e.printStackTrace();
-                    }
-                }
-            }
-            try
-            {
-                // wait for 60 seconds for the answers
-                m_loanRequstLock.await(60, TimeUnit.SECONDS);
-            } catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+			// get user by account id
+			User user = m_customerList.getUserByAccountId(accountNumber,
+					password);
 
-            // if user still have credit, then give user the loan
-            // add loan objcet to user loan list
-            if (user.getLoanAmount() + m_udpHandler.getLastRequestResult()
-                    + loanAmount <= user.getCreditLimit())
-            {
-                String ret = m_customerList.addLoanToUser(user, loanAmount);
-                Logger.getInstance().log(
-                        getUserLogFileName(user),
-                        "User has successfully requested to get a loan of "
-                                + loanAmount);
-                return ret;
-            }
+			if (user == null)
+			{
+				return null;
+			}
+			Logger.getInstance().log(getUserLogFileName(user),
+					"User has requested to get a loan of " + loanAmount);
 
-            Logger.getInstance().log(getUserLogFileName(user),
-                    "User has failed to get a loan of " + loanAmount);
-        }
-        return null;
-    }
+			// check user loan amount on current server, if it's already
+			// exceeds the credit limit, return null;
+			if (user.calculateCurrentLoanAmount() >= user.getCreditLimit())
+			{
+				Logger.getInstance().log(
+						getUserLogFileName(user),
+						"User doesn't have enought credit to apply "
+								+ loanAmount);
+				return null;
+			}
 
-    public String getCustomerServerName()
-    {
-        return m_name + "_customer";
-    }
+			// generate loan protocol object to send to the other 2 servers
+			user.calculateCurrentLoanAmount();
+			LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
+					Configuration.HOST_NAME, m_udpPort, user,
+					messageType.RequestLoan);
+			// set lock, so no action can be done before we get answers from the
+			// other two servers
+			m_loanRequstLock = new CountDownLatch(2);
 
-    public String getManagerServerName()
-    {
-        return m_name + "_manager";
-    }
+			m_udpHandler.setRequestLock(m_loanRequstLock);
+			// send UDP packets
+			for (int i = 0; i < Configuration.PORT_POOL.length; i++)
+			{
+				if (Configuration.PORT_POOL[i] != m_udpPort)
+				{
+					try
+					{
+						Utility.sendUDPPacket(Configuration.HOST_NAME,
+								Configuration.PORT_POOL[i], p);
 
-    public BankCustomerService getCustomerService()
-    {
-        return m_customerService;
-    }
+					} catch (IOException e)
+					{
+						e.printStackTrace();
+					}
+				}
+			}
+			try
+			{
+				// wait for 60 seconds for the answers
+				m_loanRequstLock.await(60, TimeUnit.SECONDS);
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 
-    public void setCustomerService(BankCustomerService m_customerService)
-    {
-        this.m_customerService = m_customerService;
-    }
+			// if user still have credit, then give user the loan
+			// add loan objcet to user loan list
+			if (user.getLoanAmount() + m_udpHandler.getLastRequestResult()
+					+ loanAmount <= user.getCreditLimit())
+			{
+				String ret = m_customerList.addLoanToUser(user, loanAmount);
+				Logger.getInstance().log(
+						getUserLogFileName(user),
+						"User has successfully requested to get a loan of "
+								+ loanAmount);
+				return ret;
+			}
 
-    public BankManagerService getManagerService()
-    {
-        return m_managerService;
-    }
+			Logger.getInstance().log(getUserLogFileName(user),
+					"User has failed to get a loan of " + loanAmount);
+		}
+		return null;
+	}
 
-    public void setManagerService(BankManagerService m_managerService)
-    {
-        this.m_managerService = m_managerService;
-    }
+	public String getCustomerServerName()
+	{
+		return m_name + "_customer";
+	}
 
-    public User lookUpUser(User usr)
-    {
-        return m_customerList.getUser(usr);
-    }
+	public String getManagerServerName()
+	{
+		return m_name + "_manager";
+	}
 
-    private String getUserLogFileName(User u)
-    {
-        return m_name.toLowerCase() + "/" + u.getUsr() + "_log.txt";
-    }
+	public BankCustomerService getCustomerService()
+	{
+		return m_customerService;
+	}
 
-    private String getManagerLogFileName()
-    {
-        return m_name.toLowerCase() + "/Manager_log.txt";
-    }
+	public void setCustomerService(BankCustomerService m_customerService)
+	{
+		this.m_customerService = m_customerService;
+	}
 
-    public String getBankName()
-    {
-        return m_name;
-    }
-    
-    /**
+	public BankManagerService getManagerService()
+	{
+		return m_managerService;
+	}
+
+	public void setManagerService(BankManagerService m_managerService)
+	{
+		this.m_managerService = m_managerService;
+	}
+
+	public User lookUpUser(User usr)
+	{
+		return m_customerList.getUser(usr);
+	}
+
+	private String getUserLogFileName(User u)
+	{
+		return m_name.toLowerCase() + "/" + u.getUsr() + "_log.txt";
+	}
+
+	private String getManagerLogFileName()
+	{
+		return m_name.toLowerCase() + "/Manager_log.txt";
+	}
+
+	public String getBankName()
+	{
+		return m_name;
+	}
+
+	/**
 	 * Remove a specific loan from user and update the txt files
 	 * 
 	 * @param loan
@@ -333,6 +339,7 @@ public class BankServer
 
 	/**
 	 * Accept loan transfer and put loan into user object
+	 * 
 	 * @param user
 	 * @param loan
 	 * @return
@@ -358,34 +365,95 @@ public class BankServer
 		return true;
 	}
 
-    public boolean validateUser(String id, String password)
-    {
-        if (m_customerList.getUserByAccountId(id, password) == null
-                && m_customerList.getUserByUserName(id, password) == null)
-        {
-            return false;
-        }
+	public boolean validateUser(String id, String password)
+	{
+		if (m_customerList.getUserByAccountId(id, password) == null
+				&& m_customerList.getUserByUserName(id, password) == null)
+		{
+			return false;
+		}
 
-        return true;
-    }
-    
-    public boolean validateAdminUser(String id, String password)
-    {
-        if (m_customerList.getUserByUserName(id, password) == null)
-        {
-            return false;
-        }else if(!m_customerList.getUserByUserName(id, password).isAdmin())
-        {
-            return false;
-        }
+		return true;
+	}
 
-        return true;
-    }
+	public boolean validateAdminUser(String id, String password)
+	{
+		if (m_customerList.getUserByUserName(id, password) == null)
+		{
+			return false;
+		} else if (!m_customerList.getUserByUserName(id, password).isAdmin())
+		{
+			return false;
+		}
 
-    public String transferLoan(String loanID, String currentBank,
-            String otherBank)
-    {
-        return null;
-    }
+		return true;
+	}
+
+	public String transferLoan(String loanID, String currentBank,
+			String otherBank)
+	{
+		m_loanTransferLock = new CountDownLatch(1);
+		if (!currentBank.equalsIgnoreCase(m_name))
+		{
+			return null;
+		}
+
+		int targetBankTCPPort = Utility.getTCPPortByBankName(otherBank);
+		if (targetBankTCPPort == -1)
+		{
+			return null;
+		}
+		User user = m_customerList.getUserByLoanId(loanID);
+
+		if (user == null)
+		{
+			return null;
+		}
+		synchronized (user)
+		{
+			Logger.getInstance().log(
+					getUserLogFileName(user),
+					"User has requested to transfer loan from " + currentBank
+							+ " to " + otherBank);
+			Loan loanToTransfer = null;
+			for (Loan l : user.getLoanList())
+			{
+				if (l.getId().equals(loanID))
+				{
+					loanToTransfer = l;
+					break;
+				}
+			}
+			m_tcpHandler.setLock(m_loanTransferLock);
+
+			LoanProtocol protocol = new LoanProtocol(
+					Utility.generateRandomUniqueId(), "localhost", m_tcpPort,
+					user, messageType.Transfer, loanToTransfer);
+			try
+			{
+				Utility.sendMessageOverTcp(protocol, "localhost",
+						targetBankTCPPort);
+				boolean result = m_loanTransferLock.await(60, TimeUnit.SECONDS);
+				
+				if(result == false)
+				{
+					return null;
+				}
+				else
+				{
+					return "SUCCESS";
+				}
+			} catch (IOException e)
+			{
+				e.printStackTrace();
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
+		}
+		
+		return null;
+
+	}
 
 }

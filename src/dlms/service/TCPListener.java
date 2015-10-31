@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.concurrent.CountDownLatch;
 
 import dlms.common.Configuration.messageType;
 import dlms.common.protocol.LoanProtocol;
@@ -17,12 +18,18 @@ public class TCPListener implements Runnable
     private BankServer m_server = null;
     private Thread m_thread;
     private boolean terminate = false;
+	private CountDownLatch m_lock;
 
     public TCPListener(int port, BankServer server)
     {
         m_listeningPort = port;
         m_server = server;
         m_thread = new Thread(this);
+    }
+    
+    public void startListener()
+    {
+    	m_thread.start();
     }
 
     @Override
@@ -80,6 +87,7 @@ public class TCPListener implements Runnable
     private LoanProtocol ProcessTransferAnswer(LoanProtocol protocol)
     {
         m_server.removeLoan(protocol.getLoanInfo());
+        m_lock.countDown();
         return protocol; 
     }
 
@@ -106,4 +114,10 @@ public class TCPListener implements Runnable
         // transfered loan into hashmap now
         m_server.acceptTransferedLoan(protocol.getUser(), protocol.getLoanInfo());
     }
+
+	public void setLock(CountDownLatch m_loanTransferLock)
+	{
+		m_lock = m_loanTransferLock;
+		
+	}
 }
