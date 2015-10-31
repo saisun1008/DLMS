@@ -234,7 +234,7 @@ public class Utility
 					.getLocalHost().getHostAddress();
 			String line = System.getProperty("java.home");
 			String startCmd = "\"" + line.replace("\n", "").replace("\r", "")
-					+ "\\bin\\tnameserv\" -ORBInitialPort " + port + "&";
+					+ "/bin/tnameserv\" -ORBInitialPort " + port + "&";
 			Process p = Runtime.getRuntime().exec(startCmd);                                                                                                                                                     
 			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
 			String s;
