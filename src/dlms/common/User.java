@@ -202,7 +202,17 @@ public class User implements Serializable
 		return pri_accountId + SEPERATOR + pri_firstName + SEPERATOR
 				+ pri_lastName + SEPERATOR + pri_phone + SEPERATOR + pri_psw
 				+ SEPERATOR + pri_email + SEPERATOR + pri_creditLimit
-				+ SEPERATOR + isAdmin();
+				+ SEPERATOR + isAdmin()+"\nLoan info:\n" + toLoanString();
+	}
+	
+	public String toLoanString(){
+		String ret = "";
+		for(Loan l:m_loanList)
+		{
+			ret += l.toLogString() + "\n";
+		}
+		
+		return ret;
 	}
 
 	public boolean isCorrectPassword(String psw)
