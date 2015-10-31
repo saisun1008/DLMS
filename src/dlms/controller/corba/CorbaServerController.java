@@ -30,6 +30,8 @@ public class CorbaServerController
         } catch (IOException e)
 		{
 			e.printStackTrace();
+		} catch (InterruptedException e) {
+			e.printStackTrace();
 		}
         
         CorbaServerController controller = new CorbaServerController();

@@ -213,9 +213,10 @@ public class Utility
 	 *            port number that naming service will be running on
 	 * @return
 	 * @throws IOException 
+	 * @throws InterruptedException 
 	 */
 	public static ServiceThread launchCorbaNamingService(int port)
-			throws IOException
+			throws IOException, InterruptedException
 	{
 		ServiceThread namingService = null;
 		if (System.getProperty("os.name").toLowerCase().contains("windows"))
@@ -233,14 +234,11 @@ public class Utility
 			Configuration.CORBA_NAMING_SERVICE_HOST = InetAddress
 					.getLocalHost().getHostAddress();
 			String line = System.getProperty("java.home");
-			String startCmd = "\"" + line.replace("\n", "").replace("\r", "")
-					+ "/bin/tnameserv\" -ORBInitialPort " + port + "&";
-			Process p = Runtime.getRuntime().exec(startCmd);                                                                                                                                                     
-			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			String s;
-			while ((s = stdInput.readLine()) != null) {
-			        System.out.println(s);
-			}
+			String startCmd = line.replace("\n", "").replace("\r", "")
+					+ "/bin/tnameserv -ORBInitialPort " + port;
+			namingService = new ServiceThread(startCmd);
+			namingService.start();
+			Thread.sleep(1000);
 		}
 		return namingService;
 	}
