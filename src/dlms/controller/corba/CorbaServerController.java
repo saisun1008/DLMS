@@ -1,5 +1,6 @@
 package dlms.controller.corba;
 
+import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 
@@ -26,7 +27,10 @@ public class CorbaServerController
         } catch (UnknownHostException e)
         {
             e.printStackTrace();
-        }
+        } catch (IOException e)
+		{
+			e.printStackTrace();
+		}
         
         CorbaServerController controller = new CorbaServerController();
         for (int i = 0; i < Configuration.BANK_NAME_POOL.length; i++)

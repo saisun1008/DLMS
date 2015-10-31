@@ -1,10 +1,12 @@
 package dlms.common.util;
 
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
@@ -63,6 +65,7 @@ public class Utility
 
 	/**
 	 * Write a message to the given file
+	 * 
 	 * @param fileName
 	 * @param msg
 	 * @return
@@ -107,6 +110,7 @@ public class Utility
 
 	/**
 	 * Send UDP packet to a host and port
+	 * 
 	 * @param host
 	 * @param port
 	 * @param content
@@ -144,7 +148,7 @@ public class Utility
 			return -1;
 		}
 	}
-	
+
 	public static int getTCPPortByBankName(String name)
 	{
 		int ret = getIndexFromArray(name.toUpperCase(),
@@ -164,7 +168,9 @@ public class Utility
 	}
 
 	/**
-	 * Get all RMI services from specified ports, and return them in a string array
+	 * Get all RMI services from specified ports, and return them in a string
+	 * array
+	 * 
 	 * @return
 	 */
 	public static String[] getRMIServices()
@@ -180,13 +186,14 @@ public class Utility
 		{
 			try
 			{
-				Registry registry = LocateRegistry
-						.getRegistry(Configuration.HOST_NAME,
-								Configuration.REGISTERY_PORT_POOL[i]);
+				Registry registry = LocateRegistry.getRegistry(
+						Configuration.HOST_NAME,
+						Configuration.REGISTERY_PORT_POOL[i]);
 				for (String str : registry.list())
 				{
-					list.add("[localhost:" + Configuration.REGISTERY_PORT_POOL[i]
-							+ "] : " + str);
+					list.add("[localhost:"
+							+ Configuration.REGISTERY_PORT_POOL[i] + "] : "
+							+ str);
 				}
 
 			} catch (RemoteException e)
@@ -198,34 +205,57 @@ public class Utility
 
 		return list.toArray(new String[list.size()]);
 	}
-	
+
 	/**
 	 * Start corba naming service thread on a given port
-	 * @param port port number that naming service will be running on
+	 * 
+	 * @param port
+	 *            port number that naming service will be running on
 	 * @return
-	 * @throws UnknownHostException 
+	 * @throws IOException 
 	 */
-	public static ServiceThread launchCorbaNamingService(int port) throws UnknownHostException
+	public static ServiceThread launchCorbaNamingService(int port)
+			throws IOException
 	{
-	    Configuration.CORBA_NAMING_SERVICE_HOST = InetAddress.getLocalHost().getHostAddress();
-	    String line = System.getProperty("java.home");
-        String startCmd = "\"" + line.replace("\n", "").replace("\r", "")
-                + "\\bin\\tnameserv\" -ORBInitialPort " + port + "&";
-        ServiceThread namingService = new ServiceThread(startCmd);
-        namingService.run();
-        return namingService;
+		ServiceThread namingService = null;
+		if (System.getProperty("os.name").toLowerCase().contains("windows"))
+		{
+			Configuration.CORBA_NAMING_SERVICE_HOST = InetAddress
+					.getLocalHost().getHostAddress();
+			String line = System.getProperty("java.home");
+			String startCmd = "\"" + line.replace("\n", "").replace("\r", "")
+					+ "\\bin\\tnameserv\" -ORBInitialPort " + port + "&";
+			namingService = new ServiceThread(startCmd);
+			namingService.run();
+		}
+		else
+		{
+			Configuration.CORBA_NAMING_SERVICE_HOST = InetAddress
+					.getLocalHost().getHostAddress();
+			String line = System.getProperty("java.home");
+			String startCmd = "\"" + line.replace("\n", "").replace("\r", "")
+					+ "\\bin\\tnameserv\" -ORBInitialPort " + port + "&";
+			Process p = Runtime.getRuntime().exec(startCmd);                                                                                                                                                     
+			BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			String s;
+			while ((s = stdInput.readLine()) != null) {
+			        System.out.println(s);
+			}
+		}
+		return namingService;
 	}
-	
-    
-    public static void sendMessageOverTcp(LoanProtocol protocol, String host, int port) throws UnknownHostException, IOException
-    {
-        Socket socket = new Socket(host, port);
-        
-        ObjectOutputStream outputStream = new ObjectOutputStream(socket.getOutputStream());
-        
-        outputStream.writeObject(protocol);
-        
-        outputStream.close();
-        socket.close();
-    }
+
+	public static void sendMessageOverTcp(LoanProtocol protocol, String host,
+			int port) throws UnknownHostException, IOException
+	{
+		Socket socket = new Socket(host, port);
+
+		ObjectOutputStream outputStream = new ObjectOutputStream(
+				socket.getOutputStream());
+
+		outputStream.writeObject(protocol);
+
+		outputStream.close();
+		socket.close();
+	}
 }
