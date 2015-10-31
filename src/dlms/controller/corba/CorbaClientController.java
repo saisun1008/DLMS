@@ -66,7 +66,7 @@ public class CorbaClientController
 
             Scanner scan = new Scanner(System.in);
             System.out.println("Please enter desired bank to proceed");
-            bank = scan.nextLine();
+            bank = scan.nextLine().toUpperCase();
             try
             {
                 if (service != null)
@@ -83,12 +83,18 @@ public class CorbaClientController
                     | org.omg.CosNaming.NamingContextPackage.InvalidName e)
             {
                 e.printStackTrace();
+                System.out.println("Error, no such bank service");
+                continue;
             } catch (AdapterInactive e)
             {
                 e.printStackTrace();
+                System.out.println("Error, no such bank service");
+                continue;
             } catch (InvalidName e)
             {
                 e.printStackTrace();
+                System.out.println("Error, no such bank service");
+                continue;
             }
             CorbaClientController controller = new CorbaClientController();
             switch (ServerDisplayMsgs.printCustomerOps())
