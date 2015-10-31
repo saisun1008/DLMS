@@ -164,6 +164,7 @@ public class User implements Serializable
 
 	/**
 	 * Check if given user is the same as current user
+	 * 
 	 * @param user
 	 * @return
 	 */
@@ -197,21 +198,23 @@ public class User implements Serializable
 		return pri_bank;
 	}
 
-	public String toLogString()
+	public String toLogString(boolean isForPrint)
 	{
 		return pri_accountId + SEPERATOR + pri_firstName + SEPERATOR
 				+ pri_lastName + SEPERATOR + pri_phone + SEPERATOR + pri_psw
 				+ SEPERATOR + pri_email + SEPERATOR + pri_creditLimit
-				+ SEPERATOR + isAdmin()+"\nLoan info:\n" + toLoanString();
+				+ SEPERATOR + isAdmin()
+				+ (isForPrint ? "\nLoan info:\n" + toLoanString() : "");
 	}
-	
-	public String toLoanString(){
+
+	public String toLoanString()
+	{
 		String ret = "";
-		for(Loan l:m_loanList)
+		for (Loan l : m_loanList)
 		{
 			ret += l.toLogString() + "\n";
 		}
-		
+
 		return ret;
 	}
 
@@ -222,6 +225,7 @@ public class User implements Serializable
 
 	/**
 	 * Calculate current user loan amount
+	 * 
 	 * @return
 	 */
 	public double calculateCurrentLoanAmount()
@@ -244,27 +248,27 @@ public class User implements Serializable
 	{
 		return pri_creditLimit;
 	}
-	
+
 	public String getFirstName()
 	{
 		return pri_firstName;
 	}
-	
+
 	public String getLastName()
 	{
 		return pri_lastName;
 	}
-	
+
 	public String getEmail()
 	{
 		return pri_email;
 	}
-	
+
 	public String getPhone()
 	{
 		return pri_phone;
 	}
-	
+
 	public String getPassword()
 	{
 		return pri_psw;

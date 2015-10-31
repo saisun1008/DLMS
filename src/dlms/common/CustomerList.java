@@ -324,7 +324,7 @@ public class CustomerList
 				{
 					// write user info to customerList.txt
 					Utility.writeToFile("data/" + m_bankName.toLowerCase()
-							+ "/" + CUSTOMER_FILE, usr.toLogString());
+							+ "/" + CUSTOMER_FILE, usr.toLogString(false));
 					// first let's empty the load file for the user and write
 					// load
 					// info back
@@ -509,14 +509,14 @@ public class CustomerList
 	 * Print all customer info to string
 	 * @return
 	 */
-	public String getAllCustomerInfoToString()
+	public String getAllCustomerInfoToString(boolean isForPrint)
 	{
 		String ret = "";
 		for (String key : m_map.keySet())
 		{
 			for (User u : m_map.get(key))
 			{
-				ret += u.toLogString() + "\n";
+				ret += u.toLogString(isForPrint) + "\n";
 			}
 		}
 		return ret;

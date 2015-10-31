@@ -171,7 +171,7 @@ public class BankServer
 	{
 		Logger.getInstance().log(getManagerLogFileName(),
 				"Requested to print all customer info");
-		return m_customerList.getAllCustomerInfoToString();
+		return m_customerList.getAllCustomerInfoToString(true);
 	}
 
 	public String openAccount(String bank, String firstName, String lastName,
