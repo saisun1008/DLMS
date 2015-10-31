@@ -374,12 +374,14 @@ public class BankServer
 			boolean exist = m_customerList.isUserExist(user);
 			if (exist)
 			{
+				loan.setAccountId(m_customerList.getUser(user).getAccount());
 				m_customerList.getUser(user).getLoanList().add(loan);
 			} else
 			{
-				m_customerList.addCustomer(m_name, user.getFirstName(),
+				String account = m_customerList.addCustomer(m_name, user.getFirstName(),
 						user.getLastName(), user.getEmail(), user.getPhone(),
 						user.getPassword());
+				loan.setAccountId(account);
 				m_customerList.getUser(user).getLoanList().add(loan);
 			}
 			m_customerList.writeAllCustomerInfoToFiles();

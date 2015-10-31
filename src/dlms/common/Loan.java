@@ -89,5 +89,10 @@ public class Loan implements Serializable
 	{
 		return m_accountId;
 	}
+	
+	public void setAccountId(String id)
+	{
+		m_accountId = id;
+	}
 
 }
