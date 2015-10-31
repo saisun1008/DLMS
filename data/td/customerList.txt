@@ -1,3 +1,2 @@
 1445103729964,sai,sun,514514514,1234,saisun@test.com,200000.0,false
 1444088547584,test,test,4142,1234,test@test.com,200000.0,false
-1,Manager,Manager,514514514,Manager,manager@bank.com,200000.0,true

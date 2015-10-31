@@ -44,6 +44,7 @@ public class BankServer
 	private CountDownLatch m_loanRequstLock = null;
 	private TCPListener m_tcpHandler;
 	private CountDownLatch m_loanTransferLock;
+	private String lastRemovedLoanId = "";
 
 	/**
 	 * Constructor for java RMI, initialize data structures
@@ -196,7 +197,7 @@ public class BankServer
 
 			if (user == null)
 			{
-				return null;
+				return "";
 			}
 			Logger.getInstance().log(getUserLogFileName(user),
 					"User has requested to get a loan of " + loanAmount);
@@ -209,7 +210,7 @@ public class BankServer
 						getUserLogFileName(user),
 						"User doesn't have enought credit to apply "
 								+ loanAmount);
-				return null;
+				return "";
 			}
 
 			// generate loan protocol object to send to the other 2 servers
@@ -263,7 +264,7 @@ public class BankServer
 			Logger.getInstance().log(getUserLogFileName(user),
 					"User has failed to get a loan of " + loanAmount);
 		}
-		return null;
+		return "";
 	}
 
 	public String getCustomerServerName()
@@ -325,16 +326,37 @@ public class BankServer
 	 */
 	public boolean removeLoan(Loan loan)
 	{
+		if (lastRemovedLoanId.equals(loan.getId()))
+		{
+			return false;
+		}
+		lastRemovedLoanId = loan.getId();
 		synchronized (m_customerList)
 		{
 			// find user by loan id
 			User usr = m_customerList.getUserByLoanId(loan.getId());
 			// remove loan from user loan list
-			usr.getLoanList().remove(loan);
+			for (int i = 0; i < usr.getLoanList().size(); i++)
+			{
+				if (usr.getLoanList().get(i).getId().equals(loan.getId()))
+				{
+					usr.getLoanList().remove(i);
+				}
+			}
+			m_customerList.updateUser(usr);
 			// write all info back to txt file
 			m_customerList.writeAllCustomerInfoToFiles();
 		}
 		return true;
+	}
+
+	public boolean checkIfLoanIdExist(Loan loan)
+	{
+		if (m_customerList.getUserByLoanId(loan.getId()) != null)
+		{
+			return true;
+		}
+		return false;
 	}
 
 	/**
@@ -395,19 +417,19 @@ public class BankServer
 		m_loanTransferLock = new CountDownLatch(1);
 		if (!currentBank.equalsIgnoreCase(m_name))
 		{
-			return null;
+			return "";
 		}
 
 		int targetBankTCPPort = Utility.getTCPPortByBankName(otherBank);
 		if (targetBankTCPPort == -1)
 		{
-			return null;
+			return "";
 		}
 		User user = m_customerList.getUserByLoanId(loanID);
 
 		if (user == null)
 		{
-			return null;
+			return "";
 		}
 		synchronized (user)
 		{
@@ -433,13 +455,12 @@ public class BankServer
 			{
 				Utility.sendMessageOverTcp(protocol, "localhost",
 						targetBankTCPPort);
-				boolean result = m_loanTransferLock.await(60, TimeUnit.SECONDS);
-				
-				if(result == false)
+				boolean result = m_loanTransferLock.await(10, TimeUnit.SECONDS);
+
+				if (result == false)
 				{
-					return null;
-				}
-				else
+					return "";
+				} else
 				{
 					return "SUCCESS";
 				}
@@ -451,8 +472,8 @@ public class BankServer
 				e.printStackTrace();
 			}
 		}
-		
-		return null;
+
+		return "";
 
 	}
 

@@ -104,7 +104,7 @@ public class CorbaClientController
                         .split(";;d");
                 String ret = service.openAccount(bank, info[0], info[1],
                         info[2], info[3], info[4]);
-                if (ret != null)
+                if (!ret.equals(""))
                 {
                     System.out
                             .println("Account has been created, account id is "
@@ -119,7 +119,7 @@ public class CorbaClientController
                 String result = service.getLoan(bank, info1[0], info1[1],
                         Double.parseDouble(info1[2]));
 
-                if (result != null)
+                if (!result.equals(""))
                 {
                     System.out.println("Loan has been created, loan id is "
                             + result);
@@ -133,7 +133,7 @@ public class CorbaClientController
                 String reply = service.transferLoan(info2[0], info2[1],
                         info2[2]);
 
-                if (reply != null)
+                if (!reply.equals(""))
                 {
                     System.out.println("Loan has been transfered, loan id is "
                             + reply);

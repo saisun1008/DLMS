@@ -344,6 +344,13 @@ public class CustomerList
 									loan.toLogString());
 						}
 					}
+					else
+					{
+						PrintWriter writer = new PrintWriter("data/" + m_bankName.toLowerCase() + "/"
+								+ usr.getUsr() + LOAN_FILE_EXT);
+						writer.print("");
+						writer.close();
+					}
 
 				}
 			}

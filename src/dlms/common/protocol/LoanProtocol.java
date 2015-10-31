@@ -27,7 +27,19 @@ public class LoanProtocol implements Serializable
 	private messageType m_type;
 	
 	private Loan m_loanToBeTransfered= null;
+	
+	private boolean result = false;
 
+	
+	public boolean getResult()
+	{
+		return result;
+	}
+	
+	public void setResult(boolean r)
+	{
+		result = r;
+	}
 	public LoanProtocol(String id, String host, int port, User usr,
 			messageType type)
 	{

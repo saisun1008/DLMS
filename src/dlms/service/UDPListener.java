@@ -85,6 +85,10 @@ public class UDPListener implements Runnable
 				serverSocket.receive(receivePacket);
 
 				LoanProtocol protocol = processIncomingPacket(receivePacket);
+				if(protocol == null)
+				{
+					continue;
+				}
 
 				LoanProtocol answer = processProtocol(protocol);
 				if (answer != null)
@@ -95,6 +99,7 @@ public class UDPListener implements Runnable
 					DatagramPacket sendPacket = new DatagramPacket(sendData,
 							sendData.length, IPAddress, port);
 					serverSocket.send(sendPacket);
+					answer = null;
 				}
 			} catch (IOException e)
 			{

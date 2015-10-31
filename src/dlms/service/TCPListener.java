@@ -6,6 +6,7 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 
 import dlms.common.Configuration.messageType;
@@ -14,110 +15,147 @@ import dlms.common.util.Utility;
 
 public class TCPListener implements Runnable
 {
-    private int m_listeningPort = -1;
-    private BankServer m_server = null;
-    private Thread m_thread;
-    private boolean terminate = false;
-	private CountDownLatch m_lock;
+	private int m_listeningPort = -1;
+	private BankServer m_server = null;
+	private Thread m_thread;
+	private boolean terminate = false;
+	private CountDownLatch m_lock = null;
+	private ArrayList<String> m_processedIDs;
 
-    public TCPListener(int port, BankServer server)
-    {
-        m_listeningPort = port;
-        m_server = server;
-        m_thread = new Thread(this);
-    }
-    
-    public void startListener()
-    {
-    	m_thread.start();
-    }
+	public TCPListener(int port, BankServer server)
+	{
+		m_listeningPort = port;
+		m_server = server;
+		m_thread = new Thread(this);
+		m_processedIDs = new ArrayList<String>();
+	}
 
-    @Override
-    public void run()
-    {
-        ServerSocket listeningSocket = null;
-        try
-        {
-            listeningSocket = new ServerSocket(m_listeningPort);
+	public void startListener()
+	{
+		m_thread.start();
+	}
 
-            while (!terminate)
-            {
-                Socket connectionSocket = listeningSocket.accept();
+	@Override
+	public void run()
+	{
+		ServerSocket listeningSocket = null;
+		try
+		{
+			listeningSocket = new ServerSocket(m_listeningPort);
 
-                ObjectInputStream inStream = new ObjectInputStream(
-                        connectionSocket.getInputStream());
+			while (!terminate)
+			{
+				Socket connectionSocket = listeningSocket.accept();
 
-                LoanProtocol recievedRequest = (LoanProtocol) inStream
-                        .readObject();
+				ObjectInputStream inStream = new ObjectInputStream(
+						connectionSocket.getInputStream());
 
-                LoanProtocol reply = processProtocol(recievedRequest);
-                
-                sendReply(reply);
+				LoanProtocol recievedRequest = (LoanProtocol) inStream
+						.readObject();
+				if (recievedRequest == null)
+				{
+					continue;
+				}
+				if (m_processedIDs.contains(recievedRequest.getId()))
+				{
+					continue;
+				}
 
-            }
-            listeningSocket.close();
+				LoanProtocol reply = processProtocol(recievedRequest);
 
-        } catch (IOException | ClassNotFoundException e)
-        {
-            e.printStackTrace();
-        }
-    }
+				if (reply == null)
+				{
+					continue;
+				}
+				sendReply(reply);
+				m_processedIDs.add(reply.getId());
+				reply = null;
+				recievedRequest = null;
+				connectionSocket.close();
+				inStream.close();
+			}
+			listeningSocket.close();
 
-    /**
-     * Analyze the loan protocol object and behave accordingly
-     * 
-     * @param protocol
-     * @return
-     */
-    private LoanProtocol processProtocol(LoanProtocol protocol)
-    {
-        switch (protocol.getType())
-        {
-        case Transfer:
-            return ProcessTransferRequest(protocol);
+		} catch (IOException | ClassNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+	}
 
-        case TransferAnswer:
-            return ProcessTransferAnswer(protocol);
+	/**
+	 * Analyze the loan protocol object and behave accordingly
+	 * 
+	 * @param protocol
+	 * @return
+	 */
+	private LoanProtocol processProtocol(LoanProtocol protocol)
+	{
+		switch (protocol.getType())
+		{
+		case Transfer:
+			return ProcessTransferRequest(protocol);
 
-        default:
-            return null;
-        }
-    }
+		case TransferAnswer:
+			return ProcessTransferAnswer(protocol);
 
-    private LoanProtocol ProcessTransferAnswer(LoanProtocol protocol)
-    {
-        m_server.removeLoan(protocol.getLoanInfo());
-        m_lock.countDown();
-        return protocol; 
-    }
+		default:
+			return null;
+		}
+	}
 
-    private LoanProtocol ProcessTransferRequest(LoanProtocol protocol)
-    {
-        protocol.setType(messageType.TransferAnswer);
-        return protocol;
-    }
+	private LoanProtocol ProcessTransferAnswer(LoanProtocol protocol)
+	{
+		if (protocol.getResult())
+		{
+			m_server.removeLoan(protocol.getLoanInfo());
+			m_lock.countDown();
+			m_lock = null;
+		}
+		return protocol;
+	}
 
-    private void sendReply(LoanProtocol protocol)
-    {
-        try
-        {
-            Utility.sendMessageOverTcp(protocol,protocol.getHost(),protocol.getPort());
-        } catch (UnknownHostException e)
-        {
-            e.printStackTrace();
-        } catch (IOException e)
-        {
-            e.printStackTrace();
-        }
+	private LoanProtocol ProcessTransferRequest(LoanProtocol protocol)
+	{
+		protocol.setType(messageType.TransferAnswer);
+		return protocol;
+	}
 
-        // if nothing wrong happened during the reply phase, then we can add the
-        // transfered loan into hashmap now
-        m_server.acceptTransferedLoan(protocol.getUser(), protocol.getLoanInfo());
-    }
+	private void sendReply(LoanProtocol protocol)
+	{
+		try
+		{
+			if (m_server.checkIfLoanIdExist(protocol.getLoanInfo()))
+			{
+				protocol.setResult(false);
+			} else
+			{
+				protocol.setResult(true);
+			}
+			Utility.sendMessageOverTcp(protocol, protocol.getHost(),
+					protocol.getPort());
+		} catch (UnknownHostException e)
+		{
+			e.printStackTrace();
+		} catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
+		// if nothing wrong happened during the reply phase, then we can add the
+		// transfered loan into hashmap now
+		if (protocol.getResult())
+		{
+			if (!protocol.getUser().getBank().equalsIgnoreCase(m_server.getBankName()))
+			{
+				m_server.acceptTransferedLoan(protocol.getUser(),
+						protocol.getLoanInfo());
+			}
+		}
+	}
 
 	public void setLock(CountDownLatch m_loanTransferLock)
 	{
 		m_lock = m_loanTransferLock;
-		
+
 	}
 }
