@@ -37,7 +37,7 @@ public class CorbaServerController
         CorbaServerController controller = new CorbaServerController();
         for (int i = 0; i < Configuration.BANK_NAME_POOL.length; i++)
         {
-            controller.addServer(Configuration.TCP_PORT_POOL[i],Configuration.PORT_POOL[i],Configuration.BANK_NAME_POOL[i]
+            controller.addServer(Configuration.PORT_POOL[i],Configuration.TCP_PORT_POOL[i],Configuration.BANK_NAME_POOL[i]
                     );
         }
     }
