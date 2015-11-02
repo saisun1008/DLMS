@@ -13,6 +13,12 @@ import dlms.common.Configuration.messageType;
 import dlms.common.protocol.LoanProtocol;
 import dlms.common.util.Utility;
 
+/**
+ * TCP listener class, runs as a separate thread
+ * 
+ * @author Sai
+ *
+ */
 public class TCPListener implements Runnable
 {
 	private int m_listeningPort = -1;
@@ -22,6 +28,14 @@ public class TCPListener implements Runnable
 	private CountDownLatch m_lock = null;
 	private ArrayList<String> m_processedIDs;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param port
+	 *            listener port
+	 * @param server
+	 *            bank server object which this listener belongs to
+	 */
 	public TCPListener(int port, BankServer server)
 	{
 		m_listeningPort = port;
@@ -41,17 +55,24 @@ public class TCPListener implements Runnable
 		ServerSocket listeningSocket = null;
 		try
 		{
+			// create listening socket
 			listeningSocket = new ServerSocket(m_listeningPort);
 
 			while (!terminate)
 			{
+				// accept incoming socket
 				Socket connectionSocket = listeningSocket.accept();
 
+				// read input stream
 				ObjectInputStream inStream = new ObjectInputStream(
 						connectionSocket.getInputStream());
 
 				LoanProtocol recievedRequest = (LoanProtocol) inStream
 						.readObject();
+				// read finished
+
+				// if request is null or request has already been processed,
+				// then skip it
 				if (recievedRequest == null)
 				{
 					continue;
@@ -61,12 +82,15 @@ public class TCPListener implements Runnable
 					continue;
 				}
 
+				// process received protocol
 				LoanProtocol reply = processProtocol(recievedRequest);
 
 				if (reply == null)
 				{
 					continue;
 				}
+
+				// send reply
 				sendReply(reply);
 				m_processedIDs.add(reply.getId());
 				reply = null;
@@ -103,8 +127,16 @@ public class TCPListener implements Runnable
 		}
 	}
 
+	/**
+	 * Process answer for loan transfer operation
+	 * 
+	 * @param protocol
+	 * @return
+	 */
 	private LoanProtocol ProcessTransferAnswer(LoanProtocol protocol)
 	{
+		// if result in the protocol indicates transfer is accepted by target
+		// bank, then remove loan from the current bank
 		if (protocol.getResult())
 		{
 			m_server.removeLoan(protocol.getLoanInfo());
@@ -114,16 +146,30 @@ public class TCPListener implements Runnable
 		return protocol;
 	}
 
+	/**
+	 * Generate answer for loan transfer
+	 * 
+	 * @param protocol
+	 * @return
+	 */
 	private LoanProtocol ProcessTransferRequest(LoanProtocol protocol)
 	{
+		// only change the type of the protocol to answer
 		protocol.setType(messageType.TransferAnswer);
 		return protocol;
 	}
 
+	/**
+	 * Send reply back to server which initialized the request
+	 * 
+	 * @param protocol
+	 */
 	private void sendReply(LoanProtocol protocol)
 	{
 		try
 		{
+			// if loan is already in the bank record then something is wrong,
+			// and this transfer request will be refused, otherwise, mark result as true
 			if (m_server.checkIfLoanIdExist(protocol.getLoanInfo()))
 			{
 				protocol.setResult(false);
@@ -145,7 +191,8 @@ public class TCPListener implements Runnable
 		// transfered loan into hashmap now
 		if (protocol.getResult())
 		{
-			if (!protocol.getUser().getBank().equalsIgnoreCase(m_server.getBankName()))
+			if (!protocol.getUser().getBank()
+					.equalsIgnoreCase(m_server.getBankName()))
 			{
 				m_server.acceptTransferedLoan(protocol.getUser(),
 						protocol.getLoanInfo());
@@ -157,5 +204,31 @@ public class TCPListener implements Runnable
 	{
 		m_lock = m_loanTransferLock;
 
+	}
+
+	/**
+	 * Send a loan protocol over TCP channel
+	 * 
+	 * @param protocol
+	 *            loan protocol to be sent
+	 * @param host
+	 *            receiver host name
+	 * @param port
+	 *            reciever listener port
+	 * @throws UnknownHostException
+	 * @throws IOException
+	 */
+	public void sendMessageOverTcp(LoanProtocol protocol, String host, int port)
+			throws UnknownHostException, IOException
+	{
+		Socket socket = new Socket(host, port);
+
+		ObjectOutputStream outputStream = new ObjectOutputStream(
+				socket.getOutputStream());
+
+		outputStream.writeObject(protocol);
+
+		outputStream.close();
+		socket.close();
 	}
 }
