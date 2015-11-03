@@ -568,4 +568,13 @@ public class CustomerList
 	{
 		return m_map.get(user.substring(0, 1).toUpperCase());
 	}
+	
+	
+	public void addList(ArrayList<User> list, String key)
+	{
+		if(!m_map.containsKey(key))
+		{
+			m_map.put(key, list);
+		}
+	}
 }

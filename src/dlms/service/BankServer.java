@@ -184,6 +184,11 @@ public class BankServer
 			String emailAddress, String phoneNumber, String password)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(firstName);
+		if(currentlist == null)
+		{
+			currentlist = new ArrayList<User>();
+			m_customerList.addList(currentlist, firstName.substring(0, 1).toUpperCase());
+		}
 		synchronized (currentlist)
 		{
 			return m_customerList.addCustomer(bank, firstName, lastName,
