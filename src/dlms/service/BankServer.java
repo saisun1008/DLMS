@@ -1,6 +1,7 @@
 package dlms.service;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -121,10 +122,14 @@ public class BankServer
 		// check if given bank name matches current bank server
 		if (bank.equalsIgnoreCase(m_name))
 		{
-			synchronized (m_customerList)
+
+			// find the user by loan id
+			User u = m_customerList.getUserByLoanId(loanID);
+
+			ArrayList<User> currentlist = m_customerList
+					.getUserList(u.getUsr());
+			synchronized (currentlist)
 			{
-				// find the user by loan id
-				User u = m_customerList.getUserByLoanId(loanID);
 				Logger.getInstance().log(getUserLogFileName(u),
 						"Requested to delay a loan to " + newDueDate);
 				Logger.getInstance().log(getManagerLogFileName(),
@@ -178,7 +183,8 @@ public class BankServer
 	public String openAccount(String bank, String firstName, String lastName,
 			String emailAddress, String phoneNumber, String password)
 	{
-		synchronized (m_customerList)
+		ArrayList<User> currentlist = m_customerList.getUserList(firstName);
+		synchronized (currentlist)
 		{
 			return m_customerList.addCustomer(bank, firstName, lastName,
 					emailAddress, phoneNumber, password);
@@ -188,17 +194,15 @@ public class BankServer
 	public String getLoan(String bank, String accountNumber, String password,
 			double loanAmount)
 	{
-		synchronized (m_customerList)
+		// get user by account id
+		User user = m_customerList.getUserByAccountId(accountNumber, password);
+		if (user == null)
 		{
-
-			// get user by account id
-			User user = m_customerList.getUserByAccountId(accountNumber,
-					password);
-
-			if (user == null)
-			{
-				return "";
-			}
+			return "";
+		}
+		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
+		synchronized (currentlist)
+		{
 			Logger.getInstance().log(getUserLogFileName(user),
 					"User has requested to get a loan of " + loanAmount);
 
@@ -331,10 +335,12 @@ public class BankServer
 			return false;
 		}
 		lastRemovedLoanId = loan.getId();
-		synchronized (m_customerList)
+		// find user by loan id
+		User usr = m_customerList.getUserByLoanId(loan.getId());
+		ArrayList<User> currentlist = m_customerList.getUserList(usr.getUsr());
+		synchronized (currentlist)
 		{
-			// find user by loan id
-			User usr = m_customerList.getUserByLoanId(loan.getId());
+
 			// remove loan from user loan list
 			for (int i = 0; i < usr.getLoanList().size(); i++)
 			{
@@ -368,7 +374,8 @@ public class BankServer
 	 */
 	public boolean acceptTransferedLoan(User user, Loan loan)
 	{
-		synchronized (m_customerList)
+		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
+		synchronized (currentlist)
 		{
 			// first check if user exists
 			boolean exist = m_customerList.isUserExist(user);
@@ -442,30 +449,30 @@ public class BankServer
 		 * try to get TCP listening port number for the other bank
 		 */
 		int targetBankTCPPort = Utility.getTCPPortByBankName(otherBank);
-		//if other bank doesn't exist, return
+		// if other bank doesn't exist, return
 		if (targetBankTCPPort == -1)
 		{
 			return "";
 		}
-		
-		//get user by loan id
+
+		// get user by loan id
 		User user = m_customerList.getUserByLoanId(loanID);
 
-		//if user doesn't exist, then return
+		// if user doesn't exist, then return
 		if (user == null)
 		{
 			return "";
 		}
-		
-		//start real logic
+
+		// start real logic
 		synchronized (user)
 		{
 			Logger.getInstance().log(
 					getUserLogFileName(user),
 					"User has requested to transfer loan from " + currentBank
 							+ " to " + otherBank);
-			
-			//locate the loan by loan id
+
+			// locate the loan by loan id
 			Loan loanToTransfer = null;
 			for (Loan l : user.getLoanList())
 			{
@@ -475,22 +482,21 @@ public class BankServer
 					break;
 				}
 			}
-			//loan located
-			
-			
-			//set lock in the tcp listener
+			// loan located
+
+			// set lock in the tcp listener
 			m_tcpHandler.setLock(m_loanTransferLock);
 
-			//now create the protocol to be sent to other bank server
+			// now create the protocol to be sent to other bank server
 			LoanProtocol protocol = new LoanProtocol(
 					Utility.generateRandomUniqueId(), "localhost", m_tcpPort,
 					user, messageType.Transfer, loanToTransfer);
 			try
 			{
-				//send protocol over TCP
+				// send protocol over TCP
 				Utility.sendMessageOverTcp(protocol, "localhost",
 						targetBankTCPPort);
-				//now wait for 10 seconds
+				// now wait for 10 seconds
 				boolean result = m_loanTransferLock.await(10, TimeUnit.SECONDS);
 				if (result == false)
 				{

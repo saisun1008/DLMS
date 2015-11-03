@@ -31,7 +31,7 @@ public class Configuration {
 
 	public enum messageType
 	{
-		RequestLoan, LoanAnswer, Transfer, TransferAnswer;
+		RequestLoan, LoanAnswer, Transfer, TransferAnswer, ValidateAdmin;
 	}
 	
 	//pool of udp ports

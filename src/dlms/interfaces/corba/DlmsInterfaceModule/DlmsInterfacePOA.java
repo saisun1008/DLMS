@@ -37,8 +37,6 @@ public abstract class DlmsInterfacePOA extends org.omg.PortableServer.Servant
                 return _invoke_delayPayment(_is, handler);
         } else if (opName.equals("getLoan")) {
                 return _invoke_getLoan(_is, handler);
-        } else if (opName.equals("login")) {
-                return _invoke_login(_is, handler);
         } else if (opName.equals("openAccount")) {
                 return _invoke_openAccount(_is, handler);
         } else if (opName.equals("printCustomerInfo")) {
@@ -130,21 +128,6 @@ public abstract class DlmsInterfacePOA extends org.omg.PortableServer.Servant
 
         _output = handler.createReply();
         _output.write_string(_arg_result);
-
-        return _output;
-    }
-
-    private org.omg.CORBA.portable.OutputStream _invoke_login(
-            final org.omg.CORBA.portable.InputStream _is,
-            final org.omg.CORBA.portable.ResponseHandler handler) {
-        org.omg.CORBA.portable.OutputStream _output;
-        String arg0_in = _is.read_string();
-        String arg1_in = _is.read_string();
-
-        boolean _arg_result = login(arg0_in, arg1_in);
-
-        _output = handler.createReply();
-        _output.write_boolean(_arg_result);
 
         return _output;
     }

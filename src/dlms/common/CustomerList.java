@@ -563,4 +563,9 @@ public class CustomerList
 	{
 		return m_bankName.toLowerCase() + "/" + u.getUsr() + "_log.txt";
 	}
+	
+	public ArrayList<User> getUserList(String user)
+	{
+		return m_map.get(user.substring(0, 1).toUpperCase());
+	}
 }

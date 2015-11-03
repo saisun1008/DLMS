@@ -32,9 +32,4 @@ public interface DlmsInterfaceOperations
      */
     public String transferLoan(String LoanID, String CurrentBank, String OtherBank);
 
-    /**
-     * Operation login
-     */
-    public boolean login(String userName, String password);
-
 }

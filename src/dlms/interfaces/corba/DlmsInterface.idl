@@ -12,7 +12,5 @@ module DlmsInterfaceModule {
 
     string printCustomerInfo(in string bank);
     string transferLoan (in string LoanID, in string CurrentBank, in string OtherBank);
-    
-    boolean login(in string userName, in string password);
 };
 };

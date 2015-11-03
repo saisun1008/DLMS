@@ -54,12 +54,6 @@ public class CorbaBankService extends DlmsInterfacePOA implements Runnable
     }
 
     @Override
-    public boolean login(String userName, String password)
-    {
-        return m_server.validateAdminUser(userName, password);
-    }
-
-    @Override
     public String transferLoan(String LoanID, String CurrentBank,
             String OtherBank)
     {

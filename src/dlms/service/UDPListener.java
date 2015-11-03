@@ -176,6 +176,11 @@ public class UDPListener implements Runnable
 			}
 			m_lock.countDown();
 			return null;
+		case ValidateAdmin:
+			boolean result = m_server.validateAdminUser(protocol.getUser().getUsr(), protocol.getUser().getPassword());
+			LoanProtocol l  = new LoanProtocol("", protocol.getHost(), protocol.getPort(), null, null);
+			l.setResult(result);
+			return l;
 		default:
 			return null;
 		}

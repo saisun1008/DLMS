@@ -119,6 +119,12 @@ public class User implements Serializable
 			m_usr = "Manager";
 		}
 	}
+	
+	public User(String info)
+	{
+		m_usr = info.split(";;d")[0];
+		pri_psw = info.split(";;d")[1];
+	}
 
 	/**
 	 * Check if the provided credentials match with current user
@@ -273,5 +279,7 @@ public class User implements Serializable
 	{
 		return pri_psw;
 	}
+	
+	
 
 }
