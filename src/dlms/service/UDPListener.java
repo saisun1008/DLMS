@@ -26,9 +26,10 @@ public class UDPListener implements Runnable
 	private int m_listeningPort = -1;
 	private boolean m_stop = false;
 	private BankServer m_server = null;
-	private Thread m_thread;
+	private Thread m_thread = null;
 	private CountDownLatch m_lock = null;
 	private double m_usedAmount = 0;
+	private DatagramSocket serverSocket = null;
 
 	/**
 	 * Constructor
@@ -39,7 +40,6 @@ public class UDPListener implements Runnable
 	{
 		m_listeningPort = port;
 		m_server = server;
-		m_thread = new Thread(this);
 	}
 
 	/**
@@ -47,15 +47,23 @@ public class UDPListener implements Runnable
 	 */
 	public void startListening()
 	{
+		m_thread = new Thread(this);
 		m_thread.start();
 	}
 
 	public void stopRunning()
 	{
 		m_stop = true;
+		if(serverSocket!=null)
+		{
+			serverSocket.close();
+		}
 		try
 		{
-			m_thread.join();
+			if(m_thread != null)
+			{
+				m_thread.join();
+			}
 		} catch (InterruptedException e)
 		{
 			e.printStackTrace();
@@ -65,7 +73,6 @@ public class UDPListener implements Runnable
 	@Override
 	public void run()
 	{
-		DatagramSocket serverSocket = null;
 		try
 		{
 			serverSocket = new DatagramSocket(m_listeningPort);
@@ -103,10 +110,10 @@ public class UDPListener implements Runnable
 				}
 			} catch (IOException e)
 			{
-				e.printStackTrace();
+				System.err.println("UDP Listening thread shutdown");
 			} catch (ClassNotFoundException e)
 			{
-				e.printStackTrace();
+				System.err.println("UDP Listening thread shutdown");
 			}
 		}
 		serverSocket.close();

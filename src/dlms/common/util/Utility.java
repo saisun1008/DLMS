@@ -33,6 +33,7 @@ public class Utility
 	private final static String WELCOME = "Welcome using the Distributed Loan Management System (DLMS)!\nPlease select desired operation:\n";
 	private final static String SEPARATOR = "*************************************************\n*************************************************";
 	private static ArrayList<String> list = new ArrayList<String>();
+	private static int counter = 1;
 
 	public static void printWelcome()
 	{
@@ -255,5 +256,11 @@ public class Utility
 
 		outputStream.close();
 		socket.close();
+	}
+	
+	public static int getAvailablePort()
+	{
+		counter++;
+		return 10010+ counter;
 	}
 }

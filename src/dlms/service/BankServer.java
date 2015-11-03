@@ -223,15 +223,22 @@ public class BankServer
 			}
 
 			// generate loan protocol object to send to the other 2 servers
+			int port1 = Utility.getAvailablePort();
+			int port2 = Utility.getAvailablePort();
 			user.calculateCurrentLoanAmount();
-			LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
-					Configuration.HOST_NAME, m_udpPort, user,
-					messageType.RequestLoan);
+			
 			// set lock, so no action can be done before we get answers from the
 			// other two servers
 			m_loanRequstLock = new CountDownLatch(2);
-
-			m_udpHandler.setRequestLock(m_loanRequstLock);
+			
+			//spawn a upd thread to handle it
+			
+			UDPListener listner1 = new UDPListener(port1, this);
+			UDPListener listner2 = new UDPListener(port2, this);
+			Thread thread1= null;
+			Thread thread2= null;
+			
+			int counter = 0;
 			// send UDP packets
 			for (int i = 0; i < Configuration.PORT_POOL.length; i++)
 			{
@@ -239,8 +246,31 @@ public class BankServer
 				{
 					try
 					{
-						Utility.sendUDPPacket(Configuration.HOST_NAME,
-								Configuration.PORT_POOL[i], p);
+						//creating 2 threads to send and receive from the other 2 bank servers
+						if(counter == 0)
+						{
+							LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
+									Configuration.HOST_NAME, port1, user,
+									messageType.RequestLoan);
+							listner1.setRequestLock(m_loanRequstLock);
+							thread1 = new Thread(listner1);
+							thread1.start();
+							Utility.sendUDPPacket(Configuration.HOST_NAME,
+									Configuration.PORT_POOL[i], p);
+							counter++;
+						}
+						else if(counter == 1)
+						{
+							LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
+									Configuration.HOST_NAME, port2, user,
+									messageType.RequestLoan);
+							listner2.setRequestLock(m_loanRequstLock);
+							thread2 = new Thread(listner2);
+							thread2.start();
+							Utility.sendUDPPacket(Configuration.HOST_NAME,
+									Configuration.PORT_POOL[i], p);
+						}
+						
 
 					} catch (IOException e)
 					{
@@ -259,7 +289,7 @@ public class BankServer
 
 			// if user still have credit, then give user the loan
 			// add loan objcet to user loan list
-			if (user.getLoanAmount() + m_udpHandler.getLastRequestResult()
+			if (user.getLoanAmount() + listner1.getLastRequestResult()+listner2.getLastRequestResult()
 					+ loanAmount <= user.getCreditLimit())
 			{
 				String ret = m_customerList.addLoanToUser(user, loanAmount);
@@ -267,12 +297,36 @@ public class BankServer
 						getUserLogFileName(user),
 						"User has successfully requested to get a loan of "
 								+ loanAmount);
+				listner1.stopRunning();
+				listner2.stopRunning();
+				try
+				{
+					thread1.join();
+					thread2.join();
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 				return ret;
+			}
+			else
+			{
+				listner1.stopRunning();
+				listner2.stopRunning();
+				try
+				{
+					thread1.join();
+					thread2.join();
+				} catch (InterruptedException e)
+				{
+					e.printStackTrace();
+				}
 			}
 
 			Logger.getInstance().log(getUserLogFileName(user),
 					"User has failed to get a loan of " + loanAmount);
 		}
+		
 		return "";
 	}
 
