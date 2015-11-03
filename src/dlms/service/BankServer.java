@@ -380,6 +380,11 @@ public class BankServer
 	public boolean acceptTransferedLoan(User user, Loan loan)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
+		if(currentlist == null)
+		{
+			currentlist = new ArrayList<User>();
+			m_customerList.addList(currentlist, user.getUsr().substring(0, 1).toUpperCase());
+		}
 		synchronized (currentlist)
 		{
 			// first check if user exists
