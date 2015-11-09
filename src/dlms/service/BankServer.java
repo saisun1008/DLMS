@@ -255,8 +255,12 @@ public class BankServer
 							listner1.setRequestLock(m_loanRequstLock);
 							thread1 = new Thread(listner1);
 							thread1.start();
+							//give it some time to allow UDP listener up and running
+							Thread.sleep(50);
+							
 							Utility.sendUDPPacket(Configuration.HOST_NAME,
 									Configuration.PORT_POOL[i], p);
+							
 							counter++;
 						}
 						else if(counter == 1)
@@ -267,6 +271,9 @@ public class BankServer
 							listner2.setRequestLock(m_loanRequstLock);
 							thread2 = new Thread(listner2);
 							thread2.start();
+							//give it some time to allow UDP listener up and running
+							Thread.sleep(50);
+							
 							Utility.sendUDPPacket(Configuration.HOST_NAME,
 									Configuration.PORT_POOL[i], p);
 						}
@@ -275,7 +282,10 @@ public class BankServer
 					} catch (IOException e)
 					{
 						e.printStackTrace();
-					}
+					} catch (InterruptedException e)
+                    {
+                        e.printStackTrace();
+                    }
 				}
 			}
 			try
