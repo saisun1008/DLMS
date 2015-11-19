@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?><!-- Use this file to deploy some handlers/chains and services      --><!-- Two ways to do this:                                           --><!--   java org.apache.axis.client.AdminClient deploy.wsdd          --><!--      after the axis server is running                          --><!-- or                                                             --><!--   java org.apache.axis.utils.Admin client|server deploy.wsdd   --><!--      from the same directory that the Axis engine runs         --><deployment xmlns="http://xml.apache.org/axis/wsdd/" xmlns:java="http://xml.apache.org/axis/wsdd/providers/java">
+
+  <!-- Services from WebServiceControllerService WSDL service -->
+
+  <service name="WebServiceController" provider="java:RPC" style="wrapped" use="literal">
+      <parameter name="wsdlTargetNamespace" value="http://web.service.dlms"/>
+      <parameter name="wsdlServiceElement" value="WebServiceControllerService"/>
+      <parameter name="schemaQualified" value="http://web.service.dlms"/>
+      <parameter name="wsdlServicePort" value="WebServiceController"/>
+      <parameter name="className" value="dlms.service.web.WebServiceController"/>
+      <parameter name="wsdlPortType" value="WebServiceController"/>
+      <parameter name="typeMappingVersion" value="1.2"/>
+      <operation xmlns:operNS="http://web.service.dlms" xmlns:retNS="http://web.service.dlms" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="printCustomerInfo" qname="operNS:printCustomerInfo" returnQName="retNS:printCustomerInfoReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:bank" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://web.service.dlms" xmlns:retNS="http://web.service.dlms" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="delayPayment" qname="operNS:delayPayment" returnQName="retNS:delayPaymentReturn" returnType="rtns:boolean" soapAction="">
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:bank" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:loanID" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:currentDueDate" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:newDueDate" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://web.service.dlms" xmlns:retNS="http://web.service.dlms" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="transferLoan" qname="operNS:transferLoan" returnQName="retNS:transferLoanReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:LoanID" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:CurrentBank" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:OtherBank" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://web.service.dlms" xmlns:retNS="http://web.service.dlms" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="openAccount" qname="operNS:openAccount" returnQName="retNS:openAccountReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:bank" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:firstName" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:lastName" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:emailAddress" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:phoneNumber" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:password" type="tns:string"/>
+      </operation>
+      <operation xmlns:operNS="http://web.service.dlms" xmlns:retNS="http://web.service.dlms" xmlns:rtns="http://www.w3.org/2001/XMLSchema" name="getLoan" qname="operNS:getLoan" returnQName="retNS:getLoanReturn" returnType="rtns:string" soapAction="">
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:bank" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:accountNumber" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:password" type="tns:string"/>
+        <parameter xmlns:pns="http://web.service.dlms" xmlns:tns="http://www.w3.org/2001/XMLSchema" qname="pns:loanAmount" type="tns:double"/>
+      </operation>
+      <parameter name="allowedMethods" value="transferLoan getLoan delayPayment printCustomerInfo openAccount"/>
+
+  </service>
+</deployment>

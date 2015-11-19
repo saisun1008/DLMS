@@ -1,0 +1,343 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://web.service.dlms" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://web.service.dlms" xmlns:intf="http://web.service.dlms" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<!--WSDL created by Apache Axis version: 1.4
+Built on Apr 22, 2006 (06:55:48 PDT)-->
+ <wsdl:types>
+  <schema elementFormDefault="qualified" targetNamespace="http://web.service.dlms" xmlns="http://www.w3.org/2001/XMLSchema">
+   <element name="printCustomerInfo">
+    <complexType>
+     <sequence>
+      <element name="bank" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="printCustomerInfoResponse">
+    <complexType>
+     <sequence>
+      <element name="printCustomerInfoReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="delayPayment">
+    <complexType>
+     <sequence>
+      <element name="bank" type="xsd:string"/>
+      <element name="loanID" type="xsd:string"/>
+      <element name="currentDueDate" type="xsd:string"/>
+      <element name="newDueDate" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="delayPaymentResponse">
+    <complexType>
+     <sequence>
+      <element name="delayPaymentReturn" type="xsd:boolean"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="transferLoan">
+    <complexType>
+     <sequence>
+      <element name="LoanID" type="xsd:string"/>
+      <element name="CurrentBank" type="xsd:string"/>
+      <element name="OtherBank" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="transferLoanResponse">
+    <complexType>
+     <sequence>
+      <element name="transferLoanReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="openAccount">
+    <complexType>
+     <sequence>
+      <element name="bank" type="xsd:string"/>
+      <element name="firstName" type="xsd:string"/>
+      <element name="lastName" type="xsd:string"/>
+      <element name="emailAddress" type="xsd:string"/>
+      <element name="phoneNumber" type="xsd:string"/>
+      <element name="password" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="openAccountResponse">
+    <complexType>
+     <sequence>
+      <element name="openAccountReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getLoan">
+    <complexType>
+     <sequence>
+      <element name="bank" type="xsd:string"/>
+      <element name="accountNumber" type="xsd:string"/>
+      <element name="password" type="xsd:string"/>
+      <element name="loanAmount" type="xsd:double"/>
+     </sequence>
+    </complexType>
+   </element>
+   <element name="getLoanResponse">
+    <complexType>
+     <sequence>
+      <element name="getLoanReturn" type="xsd:string"/>
+     </sequence>
+    </complexType>
+   </element>
+  </schema>
+ </wsdl:types>
+
+   <wsdl:message name="openAccountResponse">
+
+      <wsdl:part element="impl:openAccountResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="printCustomerInfoRequest">
+
+      <wsdl:part element="impl:printCustomerInfo" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getLoanResponse">
+
+      <wsdl:part element="impl:getLoanResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="openAccountRequest">
+
+      <wsdl:part element="impl:openAccount" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="getLoanRequest">
+
+      <wsdl:part element="impl:getLoan" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="delayPaymentResponse">
+
+      <wsdl:part element="impl:delayPaymentResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="printCustomerInfoResponse">
+
+      <wsdl:part element="impl:printCustomerInfoResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="transferLoanResponse">
+
+      <wsdl:part element="impl:transferLoanResponse" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="delayPaymentRequest">
+
+      <wsdl:part element="impl:delayPayment" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:message name="transferLoanRequest">
+
+      <wsdl:part element="impl:transferLoan" name="parameters">
+
+      </wsdl:part>
+
+   </wsdl:message>
+
+   <wsdl:portType name="WebServiceController">
+
+      <wsdl:operation name="printCustomerInfo">
+
+         <wsdl:input message="impl:printCustomerInfoRequest" name="printCustomerInfoRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:printCustomerInfoResponse" name="printCustomerInfoResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="delayPayment">
+
+         <wsdl:input message="impl:delayPaymentRequest" name="delayPaymentRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:delayPaymentResponse" name="delayPaymentResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="transferLoan">
+
+         <wsdl:input message="impl:transferLoanRequest" name="transferLoanRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:transferLoanResponse" name="transferLoanResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="openAccount">
+
+         <wsdl:input message="impl:openAccountRequest" name="openAccountRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:openAccountResponse" name="openAccountResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getLoan">
+
+         <wsdl:input message="impl:getLoanRequest" name="getLoanRequest">
+
+       </wsdl:input>
+
+         <wsdl:output message="impl:getLoanResponse" name="getLoanResponse">
+
+       </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:portType>
+
+   <wsdl:binding name="WebServiceControllerSoapBinding" type="impl:WebServiceController">
+
+      <wsdlsoap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
+
+      <wsdl:operation name="printCustomerInfo">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="printCustomerInfoRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="printCustomerInfoResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="delayPayment">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="delayPaymentRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="delayPaymentResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="transferLoan">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="transferLoanRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="transferLoanResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="openAccount">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="openAccountRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="openAccountResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+      <wsdl:operation name="getLoan">
+
+         <wsdlsoap:operation soapAction=""/>
+
+         <wsdl:input name="getLoanRequest">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:input>
+
+         <wsdl:output name="getLoanResponse">
+
+            <wsdlsoap:body use="literal"/>
+
+         </wsdl:output>
+
+      </wsdl:operation>
+
+   </wsdl:binding>
+
+   <wsdl:service name="WebServiceControllerService">
+
+      <wsdl:port binding="impl:WebServiceControllerSoapBinding" name="WebServiceController">
+
+         <wsdlsoap:address location="http://localhost:8080/DLMS/services/WebServiceController"/>
+
+      </wsdl:port>
+
+   </wsdl:service>
+
+</wsdl:definitions>
