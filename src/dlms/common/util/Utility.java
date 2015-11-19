@@ -162,6 +162,19 @@ public class Utility
 			return -1;
 		}
 	}
+	
+	   public static int getUDPPortByBankName(String name)
+	    {
+	        int ret = getIndexFromArray(name.toUpperCase(),
+	                Configuration.BANK_NAME_POOL);
+	        if (ret != -1)
+	        {
+	            return Configuration.PORT_POOL[ret];
+	        } else
+	        {
+	            return -1;
+	        }
+	    }
 
 	public static String generateRandomUniqueId()
 	{

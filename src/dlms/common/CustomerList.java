@@ -577,4 +577,20 @@ public class CustomerList
 			m_map.put(key, list);
 		}
 	}
+	
+	public boolean deleteUser(User user)
+	{
+	       for (String key : m_map.keySet())
+	        {
+	            for (User u : m_map.get(key))
+	            {
+	                if (u.getUsr().equals(user.getUsr()))
+	                {
+	                    m_map.get(key).remove(u);
+	                    return true;
+	                }
+	            }
+	        }
+	       return false;
+	}
 }

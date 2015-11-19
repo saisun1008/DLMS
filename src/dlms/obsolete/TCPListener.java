@@ -1,4 +1,4 @@
-package dlms.service;
+package dlms.obsolete;
 
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import dlms.common.Configuration.messageType;
 import dlms.common.protocol.LoanProtocol;
 import dlms.common.util.Utility;
+import dlms.service.BankServer;
 
 /**
  * TCP listener class, runs as a separate thread

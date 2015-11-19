@@ -31,11 +31,11 @@ public class Configuration {
 
 	public enum messageType
 	{
-		RequestLoan, LoanAnswer, Transfer, TransferAnswer, ValidateAdmin;
+		RequestLoan, LoanAnswer, Transfer, TransferAnswer, ValidateAdmin, RollBack;
 	}
 	
 	//pool of udp ports
-	public final static int[] PORT_POOL = {10000,10001,10002};
+	public final static int[] PORT_POOL = {10033,10034,10035};
 	
 	//pool of tcp ports
     public final static int[] TCP_PORT_POOL = {10003,10004,10005};
