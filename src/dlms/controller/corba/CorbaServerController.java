@@ -44,7 +44,7 @@ public class CorbaServerController
 
 	private void addServer(int i, int j, String string)
 	{
-		BankServer server = new BankServer(i,j, string);
+		BankServer server = new BankServer(i, string, true);
         m_serverList.add(server);
 	}
 }
