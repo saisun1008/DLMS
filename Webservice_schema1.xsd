@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<xs:schema version="1.0" targetNamespace="http://" xmlns:tns="http://" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+  <xs:element name="delayPayment" type="tns:delayPayment"/>
+
+  <xs:element name="delayPaymentResponse" type="tns:delayPaymentResponse"/>
+
+  <xs:element name="getLoan" type="tns:getLoan"/>
+
+  <xs:element name="getLoanResponse" type="tns:getLoanResponse"/>
+
+  <xs:element name="openAccount" type="tns:openAccount"/>
+
+  <xs:element name="openAccountResponse" type="tns:openAccountResponse"/>
+
+  <xs:element name="printCustomerInfo" type="tns:printCustomerInfo"/>
+
+  <xs:element name="printCustomerInfoResponse" type="tns:printCustomerInfoResponse"/>
+
+  <xs:element name="transferLoan" type="tns:transferLoan"/>
+
+  <xs:element name="transferLoanResponse" type="tns:transferLoanResponse"/>
+
+  <xs:complexType name="openAccount">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg4" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg5" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="openAccountResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="printCustomerInfo">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="printCustomerInfoResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="delayPayment">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="delayPaymentResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:boolean"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getLoan">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg3" type="xs:double"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="getLoanResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transferLoan">
+    <xs:sequence>
+      <xs:element name="arg0" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg1" type="xs:string" minOccurs="0"/>
+      <xs:element name="arg2" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="transferLoanResponse">
+    <xs:sequence>
+      <xs:element name="return" type="xs:string" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+</xs:schema>
+

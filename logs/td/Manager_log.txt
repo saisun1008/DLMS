@@ -3,3 +3,5 @@ Wed Oct 28 09:23:21 EDT 2015	Requested to print all customer info
 Fri Oct 30 21:44:43 EDT 2015	Requested to print all customer info
 Mon Nov 02 22:41:16 EST 2015	Requested to print all customer info
 Mon Nov 02 22:41:47 EST 2015	Requested to delay a loan to 10/30/2025
+Sat Nov 21 19:28:20 EST 2015	Requested to print all customer info
+Sat Nov 21 19:28:43 EST 2015	Requested to print all customer info
