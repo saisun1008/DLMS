@@ -5,6 +5,13 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 
+/**
+ * This is the web service interface class, similar to the java RMI interface
+ * and CORBA IDL interface
+ * 
+ * @author Sai
+ *
+ */
 @WebService
 @SOAPBinding(style = SOAPBinding.Style.RPC)
 public interface BankServerWebInterface

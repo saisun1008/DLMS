@@ -1,4 +1,4 @@
-package dlms.test;
+package dlms.test.rmi;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;

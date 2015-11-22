@@ -1,4 +1,4 @@
-package dlms.service.web.client;
+package dlms.client.web;
 
 import java.net.MalformedURLException;
 import java.net.URL;

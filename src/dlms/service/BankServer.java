@@ -98,10 +98,12 @@ public class BankServer
 			m_corbaThread = new Thread(m_corbaService);
 			m_corbaThread.start();
 		}
-	
+
 		m_udpHandler = new InternalRequestUDPListener(udpPort, this);
 		m_udpHandler.startListening();
 		m_udpPort = udpPort;
+		System.out.println("Bank server " + m_name
+				+ " is listening on UDP port " + m_udpPort);
 	}
 
 	public int getRmiPort()
@@ -602,6 +604,10 @@ public class BankServer
 
 	}
 
+	/**
+	 * Roll back info in the protocol
+	 * @param protocol
+	 */
 	public void rollBack(LoanProtocol protocol)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(protocol
