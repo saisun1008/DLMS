@@ -235,6 +235,7 @@ public class InternalRequestUDPListener implements Runnable
             return ProcessTransferAnswer(protocol);
         case RollBack:
             return processRollback(protocol);
+            //commit that everything is ok, so now we can release the transfer lock
         case Commit:
             transferLock.countDown();
             return null;
