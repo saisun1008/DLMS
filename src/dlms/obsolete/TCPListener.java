@@ -196,7 +196,7 @@ public class TCPListener implements Runnable
 					.equalsIgnoreCase(m_server.getBankName()))
 			{
 				m_server.acceptTransferedLoan(protocol.getUser(),
-						protocol.getLoanInfo());
+						protocol.getLoanInfo(), null);
 			}
 		}
 	}

@@ -449,9 +449,10 @@ public class BankServer
 	 * 
 	 * @param user
 	 * @param loan
+	 * @param lock TODO
 	 * @return
 	 */
-	public boolean acceptTransferedLoan(User user, Loan loan)
+	public boolean acceptTransferedLoan(User user, Loan loan, CountDownLatch lock)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
 		if (currentlist == null)
@@ -479,6 +480,14 @@ public class BankServer
 				m_customerList.getUser(user).getLoanList().add(loan);
 			}
 			m_customerList.writeAllCustomerInfoToFiles();
+			//lock here wait for commit or rollbackUDP message arrive
+			try
+            {
+                lock.await(5, TimeUnit.SECONDS);
+            } catch (InterruptedException e)
+            {
+                e.printStackTrace();
+            }
 		}
 		return true;
 	}
