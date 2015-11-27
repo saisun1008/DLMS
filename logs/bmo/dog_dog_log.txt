@@ -1,1 +1,2 @@
 Mon Nov 09 14:08:50 EST 2015	New Customer account created
+Thu Nov 26 21:51:33 EST 2015	User has requested to transfer loan from bmo to td

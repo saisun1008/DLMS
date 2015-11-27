@@ -102,8 +102,7 @@ public class BankServer
 		m_udpHandler = new InternalRequestUDPListener(udpPort, this);
 		m_udpHandler.startListening();
 		m_udpPort = udpPort;
-		System.out.println("Bank server " + m_name
-				+ " is listening on UDP port " + m_udpPort);
+		System.out.println("Bank server " + m_name + " is listening on UDP port " + m_udpPort);
 	}
 
 	public int getRmiPort()
@@ -120,8 +119,7 @@ public class BankServer
 	 * @param newDueDate
 	 * @return
 	 */
-	public boolean delayPayment(String bank, String loanID,
-			String currentDueDate, String newDueDate)
+	public boolean delayPayment(String bank, String loanID, String currentDueDate, String newDueDate)
 	{
 		// check if given bank name matches current bank server
 		if (bank.equalsIgnoreCase(m_name))
@@ -130,8 +128,7 @@ public class BankServer
 			// find the user by loan id
 			User u = m_customerList.getUserByLoanId(loanID);
 
-			ArrayList<User> currentlist = m_customerList
-					.getUserList(u.getUsr());
+			ArrayList<User> currentlist = m_customerList.getUserList(u.getUsr());
 			synchronized (currentlist)
 			{
 				Logger.getInstance().log(getUserLogFileName(u),
@@ -161,10 +158,8 @@ public class BankServer
 					u.getLoanList().add(loan);
 					m_customerList.updateUser(u);
 					m_customerList.writeAllCustomerInfoToFiles();
-					Logger.getInstance().log(
-							getUserLogFileName(u),
-							"Successfully requested to delay a loan to "
-									+ newDueDate);
+					Logger.getInstance().log(getUserLogFileName(u),
+							"Successfully requested to delay a loan to " + newDueDate);
 					return true;
 
 				} else
@@ -179,30 +174,27 @@ public class BankServer
 
 	public String printCustomerInfo(String bank)
 	{
-		Logger.getInstance().log(getManagerLogFileName(),
-				"Requested to print all customer info");
+		Logger.getInstance().log(getManagerLogFileName(), "Requested to print all customer info");
 		return m_customerList.getAllCustomerInfoToString(true);
 	}
 
-	public String openAccount(String bank, String firstName, String lastName,
-			String emailAddress, String phoneNumber, String password)
+	public String openAccount(String bank, String firstName, String lastName, String emailAddress,
+			String phoneNumber, String password)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(firstName);
 		if (currentlist == null)
 		{
 			currentlist = new ArrayList<User>();
-			m_customerList.addList(currentlist, firstName.substring(0, 1)
-					.toUpperCase());
+			m_customerList.addList(currentlist, firstName.substring(0, 1).toUpperCase());
 		}
 		synchronized (currentlist)
 		{
-			return m_customerList.addCustomer(bank, firstName, lastName,
-					emailAddress, phoneNumber, password);
+			return m_customerList.addCustomer(bank, firstName, lastName, emailAddress, phoneNumber,
+					password);
 		}
 	}
 
-	public String getLoan(String bank, String accountNumber, String password,
-			double loanAmount)
+	public String getLoan(String bank, String accountNumber, String password, double loanAmount)
 	{
 		// get user by account id
 		User user = m_customerList.getUserByAccountId(accountNumber, password);
@@ -220,10 +212,8 @@ public class BankServer
 			// exceeds the credit limit, return null;
 			if (user.calculateCurrentLoanAmount() >= user.getCreditLimit())
 			{
-				Logger.getInstance().log(
-						getUserLogFileName(user),
-						"User doesn't have enought credit to apply "
-								+ loanAmount);
+				Logger.getInstance().log(getUserLogFileName(user),
+						"User doesn't have enought credit to apply " + loanAmount);
 				return "";
 			}
 
@@ -238,10 +228,8 @@ public class BankServer
 
 			// spawn a upd thread to handle it
 
-			InternalRequestUDPListener listner1 = new InternalRequestUDPListener(
-					port1, this);
-			InternalRequestUDPListener listner2 = new InternalRequestUDPListener(
-					port2, this);
+			InternalRequestUDPListener listner1 = new InternalRequestUDPListener(port1, this);
+			InternalRequestUDPListener listner2 = new InternalRequestUDPListener(port2, this);
 			Thread thread1 = null;
 			Thread thread2 = null;
 
@@ -257,10 +245,8 @@ public class BankServer
 						// 2 bank servers
 						if (counter == 0)
 						{
-							LoanProtocol p = new LoanProtocol(
-									Utility.generateRandomUniqueId(),
-									Configuration.HOST_NAME, port1, user,
-									messageType.RequestLoan);
+							LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
+									Configuration.HOST_NAME, port1, user, messageType.RequestLoan);
 							listner1.setRequestLock(m_loanRequstLock);
 							thread1 = new Thread(listner1);
 							thread1.start();
@@ -274,10 +260,8 @@ public class BankServer
 							counter++;
 						} else if (counter == 1)
 						{
-							LoanProtocol p = new LoanProtocol(
-									Utility.generateRandomUniqueId(),
-									Configuration.HOST_NAME, port2, user,
-									messageType.RequestLoan);
+							LoanProtocol p = new LoanProtocol(Utility.generateRandomUniqueId(),
+									Configuration.HOST_NAME, port2, user, messageType.RequestLoan);
 							listner2.setRequestLock(m_loanRequstLock);
 							thread2 = new Thread(listner2);
 							thread2.start();
@@ -310,14 +294,11 @@ public class BankServer
 			// if user still have credit, then give user the loan
 			// add loan objcet to user loan list
 			if (user.getLoanAmount() + listner1.getLastRequestResult()
-					+ listner2.getLastRequestResult() + loanAmount <= user
-						.getCreditLimit())
+					+ listner2.getLastRequestResult() + loanAmount <= user.getCreditLimit())
 			{
 				String ret = m_customerList.addLoanToUser(user, loanAmount);
-				Logger.getInstance().log(
-						getUserLogFileName(user),
-						"User has successfully requested to get a loan of "
-								+ loanAmount);
+				Logger.getInstance().log(getUserLogFileName(user),
+						"User has successfully requested to get a loan of " + loanAmount);
 				listner1.stopRunning();
 				listner2.stopRunning();
 				try
@@ -456,15 +437,13 @@ public class BankServer
 	 *            out
 	 * @return
 	 */
-	public boolean acceptTransferedLoan(User user, Loan loan,
-			CountDownLatch lock)
+	public boolean acceptTransferedLoan(User user, Loan loan, CountDownLatch lock)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
 		if (currentlist == null)
 		{
 			currentlist = new ArrayList<User>();
-			m_customerList.addList(currentlist, user.getUsr().substring(0, 1)
-					.toUpperCase());
+			m_customerList.addList(currentlist, user.getUsr().substring(0, 1).toUpperCase());
 		}
 		synchronized (currentlist)
 		{
@@ -478,36 +457,45 @@ public class BankServer
 				m_customerList.getUser(user).getLoanList().add(loan);
 			} else
 			{
-				String account = m_customerList.addCustomer(m_name,
-						user.getFirstName(), user.getLastName(),
-						user.getEmail(), user.getPhone(), user.getPassword());
+				String account = m_customerList.addCustomer(m_name, user.getFirstName(),
+						user.getLastName(), user.getEmail(), user.getPhone(), user.getPassword());
 				loan.setAccountId(account);
 				m_customerList.getUser(user).getLoanList().add(loan);
 			}
-			m_customerList.writeAllCustomerInfoToFiles();
+
 			// lock here wait for commit or rollbackUDP message arrive
 			try
 			{
 				boolean retCode = false;
-				retCode = lock.await(5, TimeUnit.SECONDS);
+				int count = 0;
+				while (count < 100)
+				{
+					if (lock.getCount() == 0)
+					{
+						retCode = true;
+						break;
+					} else
+					{
+						Thread.sleep(50);
+					}
+					count++;
+				}
 				// if we received reply and it was a commit message
 				if (retCode && !m_udpHandler.shouldServerRollback())
 				{
-					Logger.getInstance().log(
-							m_name.toUpperCase() + "customer_server_log.txt",
+					Logger.getInstance().log(m_name.toUpperCase() + "customer_server_log.txt",
 							"Loan transfer accepted");
-					System.out.println("Loan transfer accepted by bank "
-							+ m_name);
+					System.out.println("Loan transfer accepted by bank " + m_name);
+					m_customerList.writeAllCustomerInfoToFiles();
 				} else
 				{
 					// now it's the rollbak case
 					rollBack(user);
-					Logger.getInstance().log(
-							m_name.toUpperCase() + "customer_server_log.txt",
+					Logger.getInstance().log(m_name.toUpperCase() + "customer_server_log.txt",
 							"Loan transfer has been rolled back");
-					System.out.println("Loan transfer rolled back by bank "
-							+ m_name);
+					System.out.println("Loan transfer rolled back by bank " + m_name);
 				}
+
 			} catch (InterruptedException e)
 			{
 				e.printStackTrace();
@@ -555,8 +543,7 @@ public class BankServer
 	 * @param otherBank
 	 * @return
 	 */
-	public String transferLoan(String loanID, String currentBank,
-			String otherBank)
+	public String transferLoan(String loanID, String currentBank, String otherBank)
 	{
 		// create the lock
 		m_loanTransferLock = new CountDownLatch(1);
@@ -587,10 +574,8 @@ public class BankServer
 		// start real logic
 		synchronized (user)
 		{
-			Logger.getInstance().log(
-					getUserLogFileName(user),
-					"User has requested to transfer loan from " + currentBank
-							+ " to " + otherBank);
+			Logger.getInstance().log(getUserLogFileName(user),
+					"User has requested to transfer loan from " + currentBank + " to " + otherBank);
 
 			// locate the loan by loan id
 			Loan loanToTransfer = null;
@@ -608,15 +593,14 @@ public class BankServer
 			m_udpHandler.setRequestLock(m_loanTransferLock);
 
 			// now create the protocol to be sent to other bank server
-			LoanProtocol protocol = new LoanProtocol(
-					Utility.generateRandomUniqueId(), "localhost", m_udpPort,
-					user, messageType.Transfer, loanToTransfer);
+			LoanProtocol protocol = new LoanProtocol(Utility.generateRandomUniqueId(), "localhost",
+					m_udpPort, user, messageType.Transfer, loanToTransfer);
 			try
 			{
 				// send protocol over TCP
 				Utility.sendUDPPacket("localhost", targetBankUDPPort, protocol);
 				// now wait for 10 seconds
-				boolean result = m_loanTransferLock.await(10, TimeUnit.SECONDS);
+				boolean result = m_loanTransferLock.await(60, TimeUnit.SECONDS);
 				if (result == false)
 				{
 					return "";
@@ -663,6 +647,6 @@ public class BankServer
 				m_customerList.updateUser(oldUserData);
 			}
 		}
+		m_customerList.writeAllCustomerInfoToFiles();
 	}
-
 }
