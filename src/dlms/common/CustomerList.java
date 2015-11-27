@@ -338,6 +338,10 @@ public class CustomerList
      */
     public synchronized void writeAllCustomerInfoToFiles()
     {
+        if(!loadDataFromFile)
+        {
+            return;
+        }
         try
         {
             // empty the customerList.txt file
