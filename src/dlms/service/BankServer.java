@@ -448,9 +448,12 @@ public class BankServer
 	 * Accept loan transfer and put loan into user object
 	 * 
 	 * @param user
+	 *            User to transfer the loan
 	 * @param loan
+	 *            loan to be transfered
 	 * @param lock
-	 *            TODO
+	 *            transfer lock which will block until reply is received or time
+	 *            out
 	 * @return
 	 */
 	public boolean acceptTransferedLoan(User user, Loan loan,
