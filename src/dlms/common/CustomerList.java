@@ -55,7 +55,9 @@ public class CustomerList
      * txt file as data file
      * 
      * @param bank
+     *            name of the bank
      * @param loadDataFromFile
+     *            read data from txt files if set to true
      */
     public CustomerList(String bank, boolean loadDataFromFile)
     {
@@ -338,7 +340,7 @@ public class CustomerList
      */
     public synchronized void writeAllCustomerInfoToFiles()
     {
-        if(!loadDataFromFile)
+        if (!loadDataFromFile)
         {
             return;
         }
