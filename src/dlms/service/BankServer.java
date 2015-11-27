@@ -90,7 +90,7 @@ public class BankServer
 	public BankServer(int udpPort, String name, boolean isCorbaServer)
 	{
 		m_name = name;
-		m_customerList = new CustomerList(name);
+		m_customerList = new CustomerList(name,false);
 		m_customerList.loadMap();
 		if (isCorbaServer)
 		{
