@@ -32,6 +32,7 @@ public class InternalRequestUDPListener implements Runnable
     private double m_usedAmount = 0;
     private DatagramSocket serverSocket = null;
     private CountDownLatch transferLock = null;
+    private boolean shouldRollback = true;
 
     /**
      * Constructor
@@ -238,6 +239,7 @@ public class InternalRequestUDPListener implements Runnable
             //commit that everything is ok, so now we can release the transfer lock
         case Commit:
             transferLock.countDown();
+            shouldRollback = false;
             return null;
         default:
             return null;
@@ -254,7 +256,7 @@ public class InternalRequestUDPListener implements Runnable
     private LoanProtocol processRollback(LoanProtocol protocol)
     {
         transferLock.countDown();
-        m_server.rollBack(protocol);
+        shouldRollback = true;
         return null;
     }
 
@@ -327,5 +329,12 @@ public class InternalRequestUDPListener implements Runnable
     public double getLastRequestResult()
     {
         return m_usedAmount;
+    }
+    
+    public boolean shouldServerRollback()
+    {
+    	boolean ret = shouldRollback;
+    	shouldRollback = true;
+    	return ret;
     }
 }

@@ -449,10 +449,12 @@ public class BankServer
 	 * 
 	 * @param user
 	 * @param loan
-	 * @param lock TODO
+	 * @param lock
+	 *            TODO
 	 * @return
 	 */
-	public boolean acceptTransferedLoan(User user, Loan loan, CountDownLatch lock)
+	public boolean acceptTransferedLoan(User user, Loan loan,
+			CountDownLatch lock)
 	{
 		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
 		if (currentlist == null)
@@ -480,14 +482,33 @@ public class BankServer
 				m_customerList.getUser(user).getLoanList().add(loan);
 			}
 			m_customerList.writeAllCustomerInfoToFiles();
-			//lock here wait for commit or rollbackUDP message arrive
+			// lock here wait for commit or rollbackUDP message arrive
 			try
-            {
-                lock.await(5, TimeUnit.SECONDS);
-            } catch (InterruptedException e)
-            {
-                e.printStackTrace();
-            }
+			{
+				boolean retCode = false;
+				retCode = lock.await(5, TimeUnit.SECONDS);
+				// if we received reply and it was a commit message
+				if (retCode && !m_udpHandler.shouldServerRollback())
+				{
+					Logger.getInstance().log(
+							m_name.toUpperCase() + "customer_server_log.txt",
+							"Loan transfer accepted");
+					System.out.println("Loan transfer accepted by bank "
+							+ m_name);
+				} else
+				{
+					// now it's the rollbak case
+					rollBack(user);
+					Logger.getInstance().log(
+							m_name.toUpperCase() + "customer_server_log.txt",
+							"Loan transfer has been rolled back");
+					System.out.println("Loan transfer rolled back by bank "
+							+ m_name);
+				}
+			} catch (InterruptedException e)
+			{
+				e.printStackTrace();
+			}
 		}
 		return true;
 	}
@@ -615,12 +636,13 @@ public class BankServer
 
 	/**
 	 * Roll back info in the protocol
-	 * @param protocol
+	 * 
+	 * @param user
+	 *            rollbak the user data
 	 */
-	public void rollBack(LoanProtocol protocol)
+	public void rollBack(User user)
 	{
-		ArrayList<User> currentlist = m_customerList.getUserList(protocol
-				.getUser().getUsr());
+		ArrayList<User> currentlist = m_customerList.getUserList(user.getUsr());
 		if (currentlist == null)
 		{
 			return;
@@ -630,7 +652,7 @@ public class BankServer
 			// if user didn't exist before transfer, then deleted
 			if (oldUserData == null)
 			{
-				m_customerList.deleteUser(protocol.getUser());
+				m_customerList.deleteUser(user);
 			}
 			// if the user exists, then just replace it with the old data
 			else
